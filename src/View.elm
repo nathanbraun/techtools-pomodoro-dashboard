@@ -16,7 +16,8 @@ import Browser
 import Css.Global exposing (global)
 import Html.Styled exposing (div, toUnstyled)
 import Html.Styled.Attributes exposing (css)
-import Route exposing (Route)
+import Route.Path.Styled exposing (href)
+import Route.Styled as Route exposing (Route)
 import Shared.Model
 import Tailwind.Theme as Tw
 import Tailwind.Utilities as Tw
