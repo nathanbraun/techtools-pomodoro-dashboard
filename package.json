@@ -1,0 +1,16 @@
+{
+  "name": "techtools-pomodoro-dashboard",
+  "version": "1.0.0",
+  "description": "> Built with [Elm Land](https://elm.land) 🌈",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "api": "elm-graphql http://localhost:5000 --base Pomo"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@dillonkearns/elm-graphql": "^4.3.1",
+    "elm-format": "^0.8.7"
+  }
+}
