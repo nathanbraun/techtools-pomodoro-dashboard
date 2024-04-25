@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "api": "elm-graphql http://localhost:5000 --base Pomo"
+    "api": "elm-graphql https://api.pomodoro.ing --base Pomo"
   },
   "author": "",
   "license": "ISC",

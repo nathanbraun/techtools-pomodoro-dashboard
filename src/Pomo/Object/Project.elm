@@ -51,6 +51,6 @@ as_of =
     Object.selectionForField "String" "as_of" [] Decode.string
 
 
-last_touched : SelectionSet String Pomo.Object.Project
+last_touched : SelectionSet Int Pomo.Object.Project
 last_touched =
-    Object.selectionForField "String" "last_touched" [] Decode.string
+    Object.selectionForField "Int" "last_touched" [] Decode.int
