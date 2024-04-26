@@ -32,3 +32,8 @@ duration =
 start : SelectionSet Int Pomo.Object.Pomodoro
 start =
     Object.selectionForField "Int" "start" [] Decode.int
+
+
+test : SelectionSet Bool Pomo.Object.Pomodoro
+test =
+    Object.selectionForField "Bool" "test" [] Decode.bool

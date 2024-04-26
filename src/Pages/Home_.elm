@@ -123,6 +123,9 @@ view shared model =
                                     [ text "Project"
                                     ]
                                 ]
+                            , span [] [ text " | " ]
+                            , a [ href Path.Settings ]
+                                [ text "⚙" ]
                             ]
                         , h1 [ css [ Tw.mb_1 ] ]
                             [ text ("@ " ++ (shared.time |> viewDate zone))

@@ -19,15 +19,29 @@ import Pomo.ScalarCodecs
 import Pomo.Union
 
 
+type alias PomodoroOptionalArguments =
+    { start : OptionalArgument Int }
+
+
 type alias PomodoroRequiredArguments =
     { duration : Int
     , project : String
+    , test : Bool
     }
 
 
 pomodoro :
-    PomodoroRequiredArguments
+    (PomodoroOptionalArguments -> PomodoroOptionalArguments)
+    -> PomodoroRequiredArguments
     -> SelectionSet decodesTo Pomo.Object.Pomodoro
     -> SelectionSet decodesTo RootMutation
-pomodoro requiredArgs____ object____ =
-    Object.selectionForCompositeField "pomodoro" [ Argument.required "duration" requiredArgs____.duration Encode.int, Argument.required "project" requiredArgs____.project Encode.string ] object____ Basics.identity
+pomodoro fillInOptionals____ requiredArgs____ object____ =
+    let
+        filledInOptionals____ =
+            fillInOptionals____ { start = Absent }
+
+        optionalArgs____ =
+            [ Argument.optional "start" filledInOptionals____.start Encode.int ]
+                |> List.filterMap Basics.identity
+    in
+    Object.selectionForCompositeField "pomodoro" (optionalArgs____ ++ [ Argument.required "duration" requiredArgs____.duration Encode.int, Argument.required "project" requiredArgs____.project Encode.string, Argument.required "test" requiredArgs____.test Encode.bool ]) object____ Basics.identity
