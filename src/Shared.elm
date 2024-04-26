@@ -35,11 +35,6 @@ type alias Flags =
     {}
 
 
-apiUrl : String
-apiUrl =
-    "https://api.pomodoro.ing"
-
-
 decoder : Json.Decode.Decoder Flags
 decoder =
     Json.Decode.succeed {}
@@ -55,10 +50,15 @@ type alias Model =
 
 init : Result Json.Decode.Error Flags -> Route () -> ( Model, Effect Msg )
 init flagsResult route =
+    let
+        apiUrl =
+            "https://api.pomodoro.ing"
+    in
     ( { timezone = Loading
       , time = Time.millisToPosix 0
       , projects = NotAsked
       , displayAggregated = True
+      , apiUrl = apiUrl
       }
     , Effect.batch
         [ Effect.sendCmd
