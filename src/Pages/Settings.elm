@@ -68,7 +68,15 @@ update shared msg model =
             )
 
         UpdateLicense key ->
-            ( { model | inputKey = Just key, changed = True }
+            let
+                newKey =
+                    if key == "" then
+                        Nothing
+
+                    else
+                        Just key
+            in
+            ( { model | inputKey = newKey, changed = True }
             , Effect.none
             )
 

@@ -1,6 +1,7 @@
 module Interop exposing (OutgoingData(..), TaggedValue, encodeOut)
 
 import Json.Encode
+import Json.Encode.Extra exposing (maybe)
 
 
 type alias TaggedValue =
@@ -9,8 +10,8 @@ type alias TaggedValue =
 
 type OutgoingData
     = LogError String
-    | ApiUrl String
-    | LicenseKey String
+    | ApiUrl (Maybe String)
+    | LicenseKey (Maybe String)
 
 
 encodeOut : OutgoingData -> TaggedValue
@@ -18,12 +19,12 @@ encodeOut info =
     case info of
         ApiUrl url ->
             { tag = "API_URL"
-            , data = Json.Encode.string url
+            , data = maybe Json.Encode.string url
             }
 
         LicenseKey key ->
             { tag = "LICENSE_KEY"
-            , data = Json.Encode.string key
+            , data = maybe Json.Encode.string key
             }
 
         LogError err ->

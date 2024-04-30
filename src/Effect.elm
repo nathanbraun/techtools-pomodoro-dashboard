@@ -238,7 +238,7 @@ toggleDisplay =
 saveSettings : Maybe String -> Maybe String -> Effect msg
 saveSettings apiUrl licenseKey =
     batch
-        [ SendSharedMsg (Shared.Msg.SaveSettings (apiUrl |> Maybe.withDefault ""))
-        , sendOut (ApiUrl (apiUrl |> Maybe.withDefault ""))
-        , sendOut (LicenseKey (licenseKey |> Maybe.withDefault ""))
+        [ SendSharedMsg (Shared.Msg.SaveSettings apiUrl licenseKey)
+        , sendOut (ApiUrl apiUrl)
+        , sendOut (LicenseKey licenseKey)
         ]

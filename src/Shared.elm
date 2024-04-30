@@ -58,6 +58,9 @@ init flagsResult route =
         flags =
             flagsResult
                 |> Result.withDefault (Flags Nothing Nothing)
+
+        _ = Debug.log "flags" flagsResult
+
     in
     ( { timezone = Loading
       , time = Time.millisToPosix 0
@@ -136,8 +139,8 @@ update route msg model =
             , Effect.none
             )
 
-        Shared.Msg.SaveSettings url ->
-            ( { model | apiUrl = Just url }
+        Shared.Msg.SaveSettings url key ->
+            ( { model | apiUrl = url, licenseKey = key }
             , Effect.none
             )
 
