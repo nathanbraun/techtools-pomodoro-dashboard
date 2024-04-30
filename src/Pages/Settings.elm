@@ -88,91 +88,96 @@ view shared model =
     }
 
 
+inputApiUrl : Maybe String -> Html Msg
+inputApiUrl apiUrl =
+    div []
+        [ label
+            [ Attr.for "api-url"
+            , css
+                [ Tw.block
+                , Tw.text_sm
+                , Tw.font_medium
+                , Tw.leading_6
+                , Tw.text_color Theme.gray_900
+                ]
+            ]
+            [ text "API Url" ]
+        , div
+            [ css
+                [ Tw.mt_2
+                ]
+            ]
+            [ div
+                [ css
+                    [ Tw.flex
+                    , Tw.rounded_md
+                    , Tw.shadow_sm
+                    , Tw.ring_1
+                    , Tw.ring_inset
+                    , Tw.ring_color Theme.gray_300
+                    , Css.focus
+                        [ Tw.ring_2
+                        , Tw.ring_inset
+                        , Tw.ring_color Theme.indigo_600
+                        ]
+                    , Bp.sm
+                        [ Tw.max_w_md
+                        ]
+                    ]
+                ]
+                [ span
+                    [ css
+                        [ Tw.flex
+                        , Tw.select_none
+                        , Tw.items_center
+                        , Tw.pl_3
+                        , Tw.text_color Theme.gray_500
+                        , Bp.sm
+                            [ Tw.text_sm
+                            ]
+                        ]
+                    ]
+                    [ text "https://" ]
+                , input
+                    [ Attr.type_ "text"
+                    , Attr.name "api-url"
+                    , Attr.id "api-url"
+                    , Events.onInput UpdateUrl
+                    , css
+                        [ Tw.block
+                        , Tw.flex_1
+                        , Tw.border_0
+                        , Tw.bg_color Theme.transparent
+                        , Tw.py_1_dot_5
+                        , Tw.pl_1
+                        , Tw.text_color Theme.gray_900
+                        , Tw.placeholder_color Theme.gray_400
+                        , Css.focus
+                            [ Tw.ring_0
+                            ]
+                        , Bp.sm
+                            [ Tw.text_sm
+                            , Tw.leading_6
+                            ]
+                        ]
+                    , case apiUrl of
+                        Just url ->
+                            Attr.value url
+
+                        Nothing ->
+                            Attr.placeholder "api.example.com"
+                    ]
+                    []
+                ]
+            ]
+        ]
+
+
 inputView : Maybe String -> Html Msg
 inputView url =
     form []
         [ div [ css [ Tw.max_w_md ] ]
-            [ div []
-                [ label
-                    [ Attr.for "api-url"
-                    , css
-                        [ Tw.block
-                        , Tw.text_sm
-                        , Tw.font_medium
-                        , Tw.leading_6
-                        , Tw.text_color Theme.gray_900
-                        ]
-                    ]
-                    [ text "API Url" ]
-                , div
-                    [ css
-                        [ Tw.mt_2
-                        ]
-                    ]
-                    [ div
-                        [ css
-                            [ Tw.flex
-                            , Tw.rounded_md
-                            , Tw.shadow_sm
-                            , Tw.ring_1
-                            , Tw.ring_inset
-                            , Tw.ring_color Theme.gray_300
-                            , Css.focus
-                                [ Tw.ring_2
-                                , Tw.ring_inset
-                                , Tw.ring_color Theme.indigo_600
-                                ]
-                            , Bp.sm
-                                [ Tw.max_w_md
-                                ]
-                            ]
-                        ]
-                        [ span
-                            [ css
-                                [ Tw.flex
-                                , Tw.select_none
-                                , Tw.items_center
-                                , Tw.pl_3
-                                , Tw.text_color Theme.gray_500
-                                , Bp.sm
-                                    [ Tw.text_sm
-                                    ]
-                                ]
-                            ]
-                            [ text "https://" ]
-                        , input
-                            [ Attr.type_ "text"
-                            , Attr.name "api-url"
-                            , Attr.id "api-url"
-                            , Events.onInput UpdateUrl
-                            , css
-                                [ Tw.block
-                                , Tw.flex_1
-                                , Tw.border_0
-                                , Tw.bg_color Theme.transparent
-                                , Tw.py_1_dot_5
-                                , Tw.pl_1
-                                , Tw.text_color Theme.gray_900
-                                , Tw.placeholder_color Theme.gray_400
-                                , Css.focus
-                                    [ Tw.ring_0
-                                    ]
-                                , Bp.sm
-                                    [ Tw.text_sm
-                                    , Tw.leading_6
-                                    ]
-                                ]
-                            , case url of
-                                Just url_ ->
-                                    Attr.value url_
-
-                                Nothing ->
-                                    Attr.placeholder "api.example.com"
-                            ]
-                            []
-                        ]
-                    ]
-                ]
+            [ inputApiUrl url
             , saveButton
             ]
         ]
