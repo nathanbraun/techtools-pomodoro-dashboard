@@ -1,10 +1,12 @@
 module Pages.Settings exposing (Model, Msg, page)
 
+import Browser.Events
 import Css
 import Effect exposing (Effect)
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes as Attr exposing (css)
 import Html.Styled.Events as Events
+import Json.Decode
 import Page exposing (Page)
 import RemoteData exposing (RemoteData(..))
 import Route exposing (Route)
@@ -57,6 +59,12 @@ type Msg
     | UpdateLicense String
     | ClickCancel
     | ClickSave (Maybe String)
+    | PressedKey Key
+
+
+type Key
+    = Character Char
+    | Control String
 
 
 update : Shared.Model -> Msg -> Model -> ( Model, Effect Msg )
@@ -90,6 +98,18 @@ update shared msg model =
             , Effect.saveSettings model.inputUrl model.inputKey
             )
 
+        PressedKey (Control "Enter") ->
+            if model.changed then
+                ( { model | changed = False }
+                , Effect.saveSettings model.inputUrl model.inputKey
+                )
+
+            else
+                ( model, Effect.none )
+
+        PressedKey _ ->
+            ( model, Effect.none )
+
 
 
 -- SUBSCRIPTIONS
@@ -97,7 +117,12 @@ update shared msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Browser.Events.onKeyDown keyDecoder
+
+
+keyDecoder : Json.Decode.Decoder Msg
+keyDecoder =
+    Json.Decode.map PressedKey (Json.Decode.field "key" (Json.Decode.string |> Json.Decode.andThen toKeyDecoder))
 
 
 
@@ -376,3 +401,13 @@ saveButton changed url =
             )
             [ text "Save" ]
         ]
+
+
+toKeyDecoder : String -> Json.Decode.Decoder Key
+toKeyDecoder string =
+    case String.uncons string of
+        Just ( char, "" ) ->
+            Json.Decode.succeed (Character char)
+
+        _ ->
+            Json.Decode.succeed (Control string)
