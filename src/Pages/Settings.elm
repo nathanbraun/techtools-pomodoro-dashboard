@@ -6,7 +6,10 @@ import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes as Attr exposing (css)
 import Html.Styled.Events as Events
 import Page exposing (Page)
+import RemoteData exposing (RemoteData(..))
 import Route exposing (Route)
+import Route.Path as Path
+import Route.Path.Styled exposing (href)
 import Shared
 import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Theme
@@ -31,6 +34,7 @@ page shared route =
 type alias Model =
     { changed : Bool
     , inputUrl : Maybe String
+    , inputKey : Maybe String
     }
 
 
@@ -38,6 +42,7 @@ init : Shared.Model -> () -> ( Model, Effect Msg )
 init shared () =
     ( { changed = False
       , inputUrl = shared.apiUrl
+      , inputKey = shared.licenseKey
       }
     , Effect.none
     )
@@ -49,6 +54,7 @@ init shared () =
 
 type Msg
     = UpdateUrl String
+    | UpdateLicense String
     | ClickCancel
     | ClickSave (Maybe String)
 
@@ -61,6 +67,11 @@ update shared msg model =
             , Effect.none
             )
 
+        UpdateLicense key ->
+            ( { model | inputKey = Just key, changed = True }
+            , Effect.none
+            )
+
         ClickCancel ->
             ( { model | inputUrl = shared.apiUrl }
             , Effect.none
@@ -68,7 +79,7 @@ update shared msg model =
 
         ClickSave url ->
             ( { model | changed = False }
-            , Effect.saveSettings url
+            , Effect.saveSettings model.inputUrl model.inputKey
             )
 
 
@@ -89,15 +100,41 @@ view : Shared.Model -> Model -> View Msg
 view shared model =
     { title = "Settings"
     , body =
-        [ form []
+        [ div []
+            [ div [ css [ Tw.mb_4 ] ]
+                [ h1
+                    [ css
+                        [ Tw.font_bold
+                        , Tw.text_2xl
+                        , Tw.mb_1
+                        , Tw.text_left
+                        ]
+                    ]
+                    [ a [ href Path.Home_ ]
+                        [ text "← Home" ]
+                    ]
+                ]
+            ]
+        , form []
             [ div [ css [ Tw.max_w_md ] ]
-                [ inputLicense Nothing
+                [ inputLicense model.inputKey
                 , div [ css [ Tw.mt_4 ] ] [ inputApiUrl model.inputUrl ]
                 , saveButton model.changed model.inputUrl
                 ]
             ]
         ]
     }
+
+
+
+-- Failure _ ->
+--       { title = "Home"
+--       , body = [ div [] [ text "Failed to get timezone..." ] ]
+--       }
+-- _ ->
+--       { title = "Home"
+--       , body = [ div [] [ text "Loading..." ] ]
+--       }
 
 
 inputApiUrl : Maybe String -> Html Msg
@@ -189,7 +226,7 @@ inputLicense : Maybe String -> Html Msg
 inputLicense license =
     div []
         [ label
-            [ Attr.for "api-url"
+            [ Attr.for "license-key"
             , css
                 [ Tw.block
                 , Tw.text_sm
@@ -226,7 +263,7 @@ inputLicense license =
                     [ Attr.type_ "text"
                     , Attr.name "api-url"
                     , Attr.id "api-url"
-                    , Events.onInput UpdateUrl
+                    , Events.onInput UpdateLicense
                     , css
                         [ Tw.block
                         , Tw.flex_1

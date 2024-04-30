@@ -32,13 +32,16 @@ import TimeZone
 
 
 type alias Flags =
-    { apiUrl : String }
+    { apiUrl : Maybe String
+    , licenseKey : Maybe String
+    }
 
 
 decoder : Json.Decode.Decoder Flags
 decoder =
-    Json.Decode.map Flags
-        (Json.Decode.field "apiUrl" Json.Decode.string)
+    Json.Decode.map2 Flags
+        (Json.Decode.field "apiUrl" (Json.Decode.maybe Json.Decode.string))
+        (Json.Decode.field "licenseKey" (Json.Decode.maybe Json.Decode.string))
 
 
 
@@ -52,16 +55,16 @@ type alias Model =
 init : Result Json.Decode.Error Flags -> Route () -> ( Model, Effect Msg )
 init flagsResult route =
     let
-        apiUrl =
+        flags =
             flagsResult
-                |> Result.map .apiUrl
-                |> Result.toMaybe
+                |> Result.withDefault (Flags Nothing Nothing)
     in
     ( { timezone = Loading
       , time = Time.millisToPosix 0
       , projects = NotAsked
       , displayAggregated = True
-      , apiUrl = apiUrl
+      , apiUrl = flags.apiUrl
+      , licenseKey = flags.licenseKey
       }
     , Effect.batch
         [ Effect.sendCmd
@@ -70,7 +73,7 @@ init flagsResult route =
                     (RemoteData.fromResult >> Shared.Msg.ReceiveTimeZone)
             )
         , Effect.sendCmd (Task.perform Shared.Msg.GetTime Time.now)
-        , case apiUrl of
+        , case flags.apiUrl of
             Just url ->
                 Effect.sendCmd
                     (Project.queryProjects

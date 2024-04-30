@@ -10,6 +10,7 @@ type alias TaggedValue =
 type OutgoingData
     = LogError String
     | ApiUrl String
+    | LicenseKey String
 
 
 encodeOut : OutgoingData -> TaggedValue
@@ -18,6 +19,11 @@ encodeOut info =
         ApiUrl url ->
             { tag = "API_URL"
             , data = Json.Encode.string url
+            }
+
+        LicenseKey key ->
+            { tag = "LICENSE_KEY"
+            , data = Json.Encode.string key
             }
 
         LogError err ->

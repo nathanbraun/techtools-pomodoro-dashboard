@@ -1,7 +1,9 @@
 export const flags = ({ env }) => {
   const storedApiUrl = localStorage.getItem('apiUrl');
+  const storedLicenseKey = localStorage.getItem('licenseKey');
   return {
-    apiUrl: storedApiUrl || null
+    apiUrl: storedApiUrl || null,
+    licenseKey: storedLicenseKey || null
   }
 }
 
@@ -13,7 +15,11 @@ export const onReady = ({ app, env }) => {
           console.log(data);
           return
         case 'API_URL':
-        localStorage.setItem('apiUrl', data);
+          localStorage.setItem('apiUrl', data);
+          console.log(data);
+          return
+        case 'LICENSE_KEY':
+          localStorage.setItem('licenseKey', data);
           console.log(data);
           return
         default:

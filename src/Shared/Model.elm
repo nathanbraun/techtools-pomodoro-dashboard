@@ -16,4 +16,5 @@ type alias Model =
     , projects : WebData (List Project)
     , displayAggregated : Bool
     , apiUrl : Maybe String
+    , licenseKey : Maybe String
     }

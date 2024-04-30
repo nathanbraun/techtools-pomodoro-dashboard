@@ -235,9 +235,10 @@ toggleDisplay =
     SendSharedMsg Shared.Msg.ToggleDisplayAggregated
 
 
-saveSettings : Maybe String -> Effect msg
-saveSettings apiUrl =
+saveSettings : Maybe String -> Maybe String -> Effect msg
+saveSettings apiUrl licenseKey =
     batch
         [ SendSharedMsg (Shared.Msg.SaveSettings (apiUrl |> Maybe.withDefault ""))
         , sendOut (ApiUrl (apiUrl |> Maybe.withDefault ""))
+        , sendOut (LicenseKey (licenseKey |> Maybe.withDefault ""))
         ]
