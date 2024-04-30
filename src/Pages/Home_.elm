@@ -107,15 +107,6 @@ view shared model =
                                 ]
                                 [ text "Day" ]
                             , span [] [ text " | " ]
-                            , a
-                                [ href
-                                    (Path.Day_Date_
-                                        { date = shared.time |> viewDate1 zone
-                                        }
-                                    )
-                                ]
-                                [ text "Week" ]
-                            , span [] [ text " | " ]
                             , button [ onClick ToggleDisplayAggregatedHome ]
                                 [ h1
                                     [ css []
