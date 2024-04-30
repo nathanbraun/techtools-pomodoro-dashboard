@@ -74,7 +74,7 @@ init flagsResult route =
             Just url ->
                 Effect.sendCmd
                     (Project.queryProjects
-                        |> Graphql.Http.queryRequest url
+                        |> Graphql.Http.queryRequest ("https://" ++ url)
                         |> Graphql.Http.send
                             (RemoteData.fromResult
                                 >> Shared.Msg.GotProjects
@@ -130,6 +130,11 @@ update route msg model =
 
         Shared.Msg.PressedKey _ ->
             ( model
+            , Effect.none
+            )
+
+        Shared.Msg.SaveSettings url ->
+            ( { model | apiUrl = Just url }
             , Effect.none
             )
 

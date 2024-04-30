@@ -18,7 +18,7 @@ page : Shared.Model -> Route () -> Page Model Msg
 page shared route =
     Page.new
         { init = init shared
-        , update = update
+        , update = update shared
         , subscriptions = subscriptions
         , view = view shared
         }
@@ -29,12 +29,16 @@ page shared route =
 
 
 type alias Model =
-    { inputUrl : Maybe String }
+    { changed : Bool
+    , inputUrl : Maybe String
+    }
 
 
 init : Shared.Model -> () -> ( Model, Effect Msg )
 init shared () =
-    ( { inputUrl = shared.apiUrl }
+    ( { changed = False
+      , inputUrl = shared.apiUrl
+      }
     , Effect.none
     )
 
@@ -45,14 +49,26 @@ init shared () =
 
 type Msg
     = UpdateUrl String
+    | ClickCancel
+    | ClickSave (Maybe String)
 
 
-update : Msg -> Model -> ( Model, Effect Msg )
-update msg model =
+update : Shared.Model -> Msg -> Model -> ( Model, Effect Msg )
+update shared msg model =
     case msg of
         UpdateUrl url ->
-            ( { model | inputUrl = Just url }
+            ( { model | inputUrl = Just url, changed = True }
             , Effect.none
+            )
+
+        ClickCancel ->
+            ( { model | inputUrl = shared.apiUrl }
+            , Effect.none
+            )
+
+        ClickSave url ->
+            ( { model | changed = False }
+            , Effect.saveSettings url
             )
 
 
@@ -73,17 +89,13 @@ view : Shared.Model -> Model -> View Msg
 view shared model =
     { title = "Settings"
     , body =
-        [ case shared.apiUrl of
-            Just _ ->
-                div []
-                    [ inputView model.inputUrl
-                    ]
-
-            Nothing ->
-                div []
-                    [ div [] [ text "You haven't entered your API url yet." ]
-                    , inputView model.inputUrl
-                    ]
+        [ form []
+            [ div [ css [ Tw.max_w_md ] ]
+                [ inputLicense Nothing
+                , div [ css [ Tw.mt_4 ] ] [ inputApiUrl model.inputUrl ]
+                , saveButton model.changed model.inputUrl
+                ]
+            ]
         ]
     }
 
@@ -173,18 +185,80 @@ inputApiUrl apiUrl =
         ]
 
 
-inputView : Maybe String -> Html Msg
-inputView url =
-    form []
-        [ div [ css [ Tw.max_w_md ] ]
-            [ inputApiUrl url
-            , saveButton
+inputLicense : Maybe String -> Html Msg
+inputLicense license =
+    div []
+        [ label
+            [ Attr.for "api-url"
+            , css
+                [ Tw.block
+                , Tw.text_sm
+                , Tw.font_medium
+                , Tw.leading_6
+                , Tw.text_color Theme.gray_900
+                ]
+            ]
+            [ text "License Key" ]
+        , div
+            [ css
+                [ Tw.mt_2
+                ]
+            ]
+            [ div
+                [ css
+                    [ Tw.flex
+                    , Tw.rounded_md
+                    , Tw.shadow_sm
+                    , Tw.ring_1
+                    , Tw.ring_inset
+                    , Tw.ring_color Theme.gray_300
+                    , Css.focus
+                        [ Tw.ring_2
+                        , Tw.ring_inset
+                        , Tw.ring_color Theme.indigo_600
+                        ]
+                    , Bp.sm
+                        [ Tw.max_w_md
+                        ]
+                    ]
+                ]
+                [ input
+                    [ Attr.type_ "text"
+                    , Attr.name "api-url"
+                    , Attr.id "api-url"
+                    , Events.onInput UpdateUrl
+                    , css
+                        [ Tw.block
+                        , Tw.flex_1
+                        , Tw.border_0
+                        , Tw.bg_color Theme.transparent
+                        , Tw.py_1_dot_5
+                        , Tw.pl_1
+                        , Tw.text_color Theme.gray_900
+                        , Tw.placeholder_color Theme.gray_400
+                        , Css.focus
+                            [ Tw.ring_0
+                            ]
+                        , Bp.sm
+                            [ Tw.text_sm
+                            , Tw.leading_6
+                            ]
+                        ]
+                    , case license of
+                        Just license_ ->
+                            Attr.value license_
+
+                        Nothing ->
+                            Attr.placeholder "XXX-XXX-XXX"
+                    ]
+                    []
+                ]
             ]
         ]
 
 
-saveButton : Html Msg
-saveButton =
+saveButton : Bool -> Maybe String -> Html Msg
+saveButton changed url =
     div
         [ css
             [ Tw.mt_6
@@ -196,6 +270,7 @@ saveButton =
         ]
         [ button
             [ Attr.type_ "button"
+            , Events.onClick ClickCancel
             , css
                 [ Tw.text_sm
                 , Tw.font_semibold
@@ -205,26 +280,54 @@ saveButton =
             ]
             [ text "Cancel" ]
         , button
-            [ Attr.type_ "submit"
-            , css
-                [ Tw.rounded_md
-                , Tw.bg_color Theme.indigo_600
-                , Tw.px_3
-                , Tw.py_2
-                , Tw.text_sm
-                , Tw.font_semibold
-                , Tw.text_color Theme.white
-                , Tw.shadow_sm
-                , Css.focus
-                    [ Tw.outline
-                    , Tw.outline_2
-                    , Tw.outline_offset_2
-                    , Tw.outline_color Theme.indigo_600
-                    ]
-                , Css.hover
-                    [ Tw.bg_color Theme.indigo_500
+            (if changed then
+                [ Attr.type_ "button"
+                , Events.onClick (ClickSave url)
+                , css
+                    [ Tw.rounded_md
+                    , Tw.bg_color Theme.indigo_600
+                    , Tw.px_3
+                    , Tw.py_2
+                    , Tw.text_sm
+                    , Tw.font_semibold
+                    , Tw.text_color Theme.white
+                    , Tw.shadow_sm
+                    , Css.focus
+                        [ Tw.outline
+                        , Tw.outline_2
+                        , Tw.outline_offset_2
+                        , Tw.outline_color Theme.indigo_600
+                        ]
+                    , Css.hover
+                        [ Tw.bg_color Theme.indigo_500
+                        ]
                     ]
                 ]
-            ]
+
+             else
+                [ Attr.type_ "disabled"
+                , css
+                    [ Tw.rounded_md
+                    , Tw.bg_color Theme.gray_400
+                    , Tw.px_3
+                    , Tw.py_2
+                    , Tw.text_sm
+                    , Tw.font_semibold
+                    , Tw.text_color Theme.white
+                    , Tw.opacity_50
+                    , Tw.cursor_not_allowed
+                    , Tw.shadow_sm
+                    , Css.focus
+                        [ Tw.outline
+                        , Tw.outline_2
+                        , Tw.outline_offset_2
+                        , Tw.outline_color Theme.indigo_600
+                        ]
+                    , Css.hover
+                        [ Tw.bg_color Theme.indigo_500
+                        ]
+                    ]
+                ]
+            )
             [ text "Save" ]
         ]

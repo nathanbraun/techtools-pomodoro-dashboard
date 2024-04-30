@@ -1,11 +1,12 @@
-module Effect exposing
+port module Effect exposing
     ( Effect
     , none, batch
     , sendCmd, sendMsg
     , pushRoute, replaceRoute
     , pushRoutePath, replaceRoutePath
     , loadExternalUrl, back
-    , map, toCmd, toggleDisplay
+    , map, toCmd
+    , saveSettings, sendOut, toggleDisplay
     )
 
 {-|
@@ -25,6 +26,7 @@ module Effect exposing
 
 import Browser.Navigation
 import Dict exposing (Dict)
+import Interop exposing (OutgoingData(..), TaggedValue)
 import Route exposing (Route)
 import Route.Path
 import Shared.Model
@@ -212,6 +214,30 @@ toCmd options effect =
             Task.succeed sharedMsg
                 |> Task.perform options.fromSharedMsg
 
+
+port outgoing : TaggedValue -> Cmd msg
+
+
+port incoming : (TaggedValue -> msg) -> Sub msg
+
+
+sendOut : OutgoingData -> Effect msg
+sendOut info =
+    Interop.encodeOut info |> (outgoing >> SendCmd)
+
+
+
+-- port incoming : () -> Sub msg
+
+
 toggleDisplay : Effect msg
 toggleDisplay =
-  SendSharedMsg Shared.Msg.ToggleDisplayAggregated
+    SendSharedMsg Shared.Msg.ToggleDisplayAggregated
+
+
+saveSettings : Maybe String -> Effect msg
+saveSettings apiUrl =
+    batch
+        [ SendSharedMsg (Shared.Msg.SaveSettings (apiUrl |> Maybe.withDefault ""))
+        , sendOut (ApiUrl (apiUrl |> Maybe.withDefault ""))
+        ]

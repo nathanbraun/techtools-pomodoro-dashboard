@@ -22,6 +22,7 @@ type Msg
     | GotProjects (WebData (List Project))
     | ToggleDisplayAggregated
     | PressedKey Key
+    | SaveSettings String
 
 type Key
     = Character Char
