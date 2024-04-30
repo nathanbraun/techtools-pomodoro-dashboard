@@ -32,12 +32,13 @@ import TimeZone
 
 
 type alias Flags =
-    {}
+    { apiUrl : String }
 
 
 decoder : Json.Decode.Decoder Flags
 decoder =
-    Json.Decode.succeed {}
+    Json.Decode.map Flags
+        (Json.Decode.field "apiUrl" Json.Decode.string)
 
 
 
@@ -52,7 +53,9 @@ init : Result Json.Decode.Error Flags -> Route () -> ( Model, Effect Msg )
 init flagsResult route =
     let
         apiUrl =
-            "https://api.pomodoro.ing"
+            flagsResult
+                |> Result.map .apiUrl
+                |> Result.toMaybe
     in
     ( { timezone = Loading
       , time = Time.millisToPosix 0
@@ -67,11 +70,19 @@ init flagsResult route =
                     (RemoteData.fromResult >> Shared.Msg.ReceiveTimeZone)
             )
         , Effect.sendCmd (Task.perform Shared.Msg.GetTime Time.now)
-        , Effect.sendCmd
-            (Project.queryProjects
-                |> Graphql.Http.queryRequest apiUrl
-                |> Graphql.Http.send (RemoteData.fromResult >> Shared.Msg.GotProjects)
-            )
+        , case apiUrl of
+            Just url ->
+                Effect.sendCmd
+                    (Project.queryProjects
+                        |> Graphql.Http.queryRequest url
+                        |> Graphql.Http.send
+                            (RemoteData.fromResult
+                                >> Shared.Msg.GotProjects
+                            )
+                    )
+
+            Nothing ->
+                Effect.none
         ]
     )
 

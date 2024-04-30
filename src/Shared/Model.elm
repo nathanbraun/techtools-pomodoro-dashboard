@@ -15,5 +15,5 @@ type alias Model =
     , time : Time.Posix
     , projects : WebData (List Project)
     , displayAggregated : Bool
-    , apiUrl : String
+    , apiUrl : Maybe String
     }
