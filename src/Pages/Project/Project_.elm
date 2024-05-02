@@ -12,6 +12,8 @@ import Page exposing (Page)
 import RemoteData exposing (RemoteData(..))
 import Round
 import Route exposing (Route)
+import Route.Path as Path
+import Route.Path.Styled exposing (href)
 import Shared
 import Tailwind.Utilities as Tw
 import Time exposing (Month(..))
@@ -94,7 +96,7 @@ view shared model =
     case ( shared.timezone, model.project ) of
         ( Success zone, Success project ) ->
             { title = "Project"
-            , body = [ viewProject zone project ]
+            , body = [ viewProject shared zone project ]
             }
 
         ( Failure _, _ ) ->
@@ -113,16 +115,30 @@ view shared model =
             }
 
 
-viewProject : Time.Zone -> Project -> Html Msg
-viewProject timezone project =
+viewProject : Shared.Model -> Time.Zone -> Project -> Html Msg
+viewProject shared timezone project =
     let
         now =
             project.asOf
+
+        pomodoros =
+            if shared.showTestData then
+                project.pomodoros
+
+            else
+                List.filter (\x -> not x.test) project.pomodoros
     in
     div [ css [ Tw.max_w_xl ] ]
         [ div [ css [ Tw.mb_3, Tw.font_bold ] ]
             [ h1 [ css [ Tw.mb_1, Tw.text_2xl ] ]
                 [ text project.name ]
+            , div [ css [] ]
+                [ a [ href Path.Home_ ]
+                    [ text "Home" ]
+                , span [] [ text " | " ]
+                , a [ href Path.Settings ]
+                    [ text "Settings" ]
+                ]
             , h1 [ css [ Tw.mb_1 ] ]
                 [ text ("@ " ++ (project.asOf |> viewDate timezone))
                 ]
@@ -133,6 +149,7 @@ viewProject timezone project =
             , interval = Today
             , zone = timezone
             , now = now
+            , test = shared.showTestData
             }
             |> Components.Table.view
         , Components.Table.new
@@ -141,6 +158,7 @@ viewProject timezone project =
             , interval = Yesterday
             , zone = timezone
             , now = now
+            , test = shared.showTestData
             }
             |> Components.Table.view
         , Components.Table.new
@@ -149,6 +167,7 @@ viewProject timezone project =
             , interval = WeekNow
             , zone = timezone
             , now = now
+            , test = shared.showTestData
             }
             |> Components.Table.view
         , Components.Table.new
@@ -157,6 +176,7 @@ viewProject timezone project =
             , interval = WeekLast
             , zone = timezone
             , now = now
+            , test = shared.showTestData
             }
             |> Components.Table.view
         , Components.Table.new
@@ -165,6 +185,7 @@ viewProject timezone project =
             , interval = Days30
             , zone = timezone
             , now = now
+            , test = shared.showTestData
             }
             |> Components.Table.view
         , Components.Table.new
@@ -173,6 +194,7 @@ viewProject timezone project =
             , interval = All
             , zone = timezone
             , now = now
+            , test = shared.showTestData
             }
             |> Components.Table.view
         , div [ css [ Tw.mt_5 ] ]
@@ -180,7 +202,7 @@ viewProject timezone project =
                 [ text "Last 10 Pomodoros"
                 ]
             , div []
-                (List.map (viewPomodoro timezone) (List.take 10 project.pomodoros))
+                (List.map (viewPomodoro timezone) (List.take 10 pomodoros))
             ]
 
         -- , div [] (List.map (viewPomodoro timezone) project.pomodoros)
@@ -250,9 +272,14 @@ numericMonth month =
 
 viewPomodoro : Time.Zone -> Pomodoro -> Html Msg
 viewPomodoro timezone pomo =
-    div [ css [ Tw.w_64, Tw.flex ] ]
+    div [ css [ Tw.w_72, Tw.flex, Tw.whitespace_pre ] ]
         [ div [ css [ Tw.flex_1 ] ] [ text (pomo.start |> viewDate timezone) ]
         , div [ css [ Tw.ml_auto ] ] [ text (pomo.duration |> durationToHuman) ]
+        , if pomo.test then
+            div [ css [] ] [ text " (test)" ]
+
+          else
+            div [ css [] ] [ text "       " ]
         ]
 
 

@@ -121,6 +121,7 @@ view shared model =
                     , interval = Today
                     , zone = zone
                     , now = shared.time
+                    , test = shared.showTestData
                     }
                     |> Components.Table.view
                 , Components.Table.new
@@ -129,6 +130,7 @@ view shared model =
                     , interval = Yesterday
                     , zone = zone
                     , now = shared.time
+                    , test = shared.showTestData
                     }
                     |> Components.Table.view
                 , Components.Table.new
@@ -137,6 +139,7 @@ view shared model =
                     , interval = WeekNow
                     , zone = zone
                     , now = shared.time
+                    , test = shared.showTestData
                     }
                     |> Components.Table.view
                 , Components.Table.new
@@ -145,6 +148,7 @@ view shared model =
                     , interval = WeekLast
                     , zone = zone
                     , now = shared.time
+                    , test = shared.showTestData
                     }
                     |> Components.Table.view
                 , Components.Table.new
@@ -153,6 +157,7 @@ view shared model =
                     , interval = Days30
                     , zone = zone
                     , now = shared.time
+                    , test = shared.showTestData
                     }
                     |> Components.Table.view
                 , button

@@ -1,10 +1,13 @@
 export const flags = ({ env }) => {
   const storedApiUrl = localStorage.getItem('apiUrl');
   const storedLicenseKey = localStorage.getItem('licenseKey');
-  console.log(storedLicenseKey);
+  const storedTestDataFlag = localStorage.getItem('testDataFlag') !== 'false';
+
+  console.log(storedTestDataFlag);
   return {
     apiUrl: (storedApiUrl !== null) ? storedApiUrl : null,
-    licenseKey: (storedLicenseKey !== null) ? storedLicenseKey : null
+    licenseKey: (storedLicenseKey !== null) ? storedLicenseKey : null,
+    testDataFlag: storedTestDataFlag
   }
 }
 
@@ -20,6 +23,14 @@ export const onReady = ({ app, env }) => {
             localStorage.removeItem('apiUrl');
           } else {
             localStorage.setItem('apiUrl', data);
+          }
+          console.log(data);
+          return
+        case 'TEST_DATA_FLAG':
+          if (data === null) {
+            localStorage.removeItem('testDataFlag');
+          } else {
+            localStorage.setItem('testDataFlag', data);
           }
           console.log(data);
           return

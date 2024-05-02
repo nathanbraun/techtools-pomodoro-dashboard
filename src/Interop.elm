@@ -12,6 +12,7 @@ type OutgoingData
     = LogError String
     | ApiUrl (Maybe String)
     | LicenseKey (Maybe String)
+    | TestDataFlag Bool
 
 
 encodeOut : OutgoingData -> TaggedValue
@@ -25,6 +26,11 @@ encodeOut info =
         LicenseKey key ->
             { tag = "LICENSE_KEY"
             , data = maybe Json.Encode.string key
+            }
+
+        TestDataFlag flag ->
+            { tag = "TEST_DATA_FLAG"
+            , data = Json.Encode.bool flag
             }
 
         LogError err ->

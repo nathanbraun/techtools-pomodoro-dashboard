@@ -34,14 +34,16 @@ import TimeZone
 type alias Flags =
     { apiUrl : Maybe String
     , licenseKey : Maybe String
+    , testDataFlag : Bool
     }
 
 
 decoder : Json.Decode.Decoder Flags
 decoder =
-    Json.Decode.map2 Flags
+    Json.Decode.map3 Flags
         (Json.Decode.field "apiUrl" (Json.Decode.maybe Json.Decode.string))
         (Json.Decode.field "licenseKey" (Json.Decode.maybe Json.Decode.string))
+        (Json.Decode.field "testDataFlag" (Json.Decode.bool))
 
 
 
@@ -57,7 +59,7 @@ init flagsResult route =
     let
         flags =
             flagsResult
-                |> Result.withDefault (Flags Nothing Nothing)
+                |> Result.withDefault (Flags Nothing Nothing True)
 
         _ =
             Debug.log "flags" flagsResult
@@ -68,7 +70,7 @@ init flagsResult route =
       , displayAggregated = True
       , apiUrl = flags.apiUrl
       , licenseKey = flags.licenseKey
-      , showTestData = True
+      , showTestData = flags.testDataFlag
       }
     , Effect.batch
         [ Effect.sendCmd

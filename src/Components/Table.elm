@@ -29,6 +29,7 @@ new :
     , interval : PomoStatsInterval
     , now : Time.Posix
     , zone : Time.Zone
+    , test : Bool
     }
     -> PomoStats msg
 new props =
@@ -37,7 +38,7 @@ new props =
             Api.Pomodoro.statsStartEnd props.interval props.zone props.now
 
         filteredProjects =
-            props.projects |> filterCutoff bounds.start bounds.end
+            props.projects |> filterCutoff props.test bounds.start bounds.end
     in
     Settings
         { aggregate = props.aggregate

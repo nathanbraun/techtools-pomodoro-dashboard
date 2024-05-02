@@ -20,13 +20,14 @@ import Pomo.Union
 
 
 type alias PomodoroOptionalArguments =
-    { start : OptionalArgument Int }
+    { test : OptionalArgument Bool
+    , start : OptionalArgument Int
+    }
 
 
 type alias PomodoroRequiredArguments =
     { duration : Int
     , project : String
-    , test : Bool
     }
 
 
@@ -38,10 +39,10 @@ pomodoro :
 pomodoro fillInOptionals____ requiredArgs____ object____ =
     let
         filledInOptionals____ =
-            fillInOptionals____ { start = Absent }
+            fillInOptionals____ { test = Absent, start = Absent }
 
         optionalArgs____ =
-            [ Argument.optional "start" filledInOptionals____.start Encode.int ]
+            [ Argument.optional "test" filledInOptionals____.test Encode.bool, Argument.optional "start" filledInOptionals____.start Encode.int ]
                 |> List.filterMap Basics.identity
     in
-    Object.selectionForCompositeField "pomodoro" (optionalArgs____ ++ [ Argument.required "duration" requiredArgs____.duration Encode.int, Argument.required "project" requiredArgs____.project Encode.string, Argument.required "test" requiredArgs____.test Encode.bool ]) object____ Basics.identity
+    Object.selectionForCompositeField "pomodoro" (optionalArgs____ ++ [ Argument.required "duration" requiredArgs____.duration Encode.int, Argument.required "project" requiredArgs____.project Encode.string ]) object____ Basics.identity

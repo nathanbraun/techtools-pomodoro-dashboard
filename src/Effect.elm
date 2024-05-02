@@ -241,4 +241,5 @@ saveSettings apiUrl licenseKey test =
         [ SendSharedMsg (Shared.Msg.SaveSettings apiUrl licenseKey test)
         , sendOut (ApiUrl apiUrl)
         , sendOut (LicenseKey licenseKey)
+        , sendOut (TestDataFlag test)
         ]

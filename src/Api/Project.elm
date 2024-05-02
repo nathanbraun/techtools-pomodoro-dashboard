@@ -1,10 +1,10 @@
 module Api.Project exposing
     ( Project
     , ProjectName
+    , filterCutoff
     , queryProject
     , queryProjectName
     , queryProjects
-    , filterCutoff
     )
 
 import Api.Pomodoro exposing (Pomodoro)
@@ -85,6 +85,7 @@ projectSelectionSet =
         (Project.as_of |> SelectionSet.mapOrFail stringToPosix)
         (Project.last_touched |> SelectionSet.map ((*) 1000 >> Time.millisToPosix))
 
+
 projectNameSelectionSet : SelectionSet ProjectName Pomo.Object.Project
 projectNameSelectionSet =
     SelectionSet.map2 ProjectName
@@ -101,8 +102,9 @@ stringToPosix timeString =
         Nothing ->
             Err "Invalid time string"
 
-filterPomodoros : Time.Posix -> Time.Posix -> Project -> Project
-filterPomodoros start end project =
+
+filterPomodoros : Bool -> Time.Posix -> Time.Posix -> Project -> Project
+filterPomodoros test start end project =
     let
         newPomodoros =
             List.filter
@@ -115,16 +117,23 @@ filterPomodoros start end project =
                            )
                 )
                 project.pomodoros
-    in
-    { project | pomodoros = newPomodoros }
 
-filterCutoff : Time.Posix -> Time.Posix -> List Project -> List Project
-filterCutoff start end projects =
+        newPomodoros2 =
+            if test then
+                newPomodoros
+
+            else
+                List.filter (\pomo -> not pomo.test) newPomodoros
+    in
+    { project | pomodoros = newPomodoros2 }
+
+
+filterCutoff : Bool -> Time.Posix -> Time.Posix -> List Project -> List Project
+filterCutoff test start end projects =
     List.filter
         (\project ->
             (project.lastTouched |> Time.posixToMillis)
                 > (start |> Time.posixToMillis)
         )
         projects
-        |> List.map (filterPomodoros start end)
-
+        |> List.map (filterPomodoros test start end)

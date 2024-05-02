@@ -18,6 +18,7 @@ type alias Pomodoro =
     { id : Int
     , duration : Int
     , start : Time.Posix
+    , test : Bool
     }
 
 
@@ -105,10 +106,11 @@ type alias PomodoroStats =
 
 selectionSet : SelectionSet Pomodoro Pomo.Object.Pomodoro
 selectionSet =
-    SelectionSet.map3 Pomodoro
+    SelectionSet.map4 Pomodoro
         Pomodoro.id
         Pomodoro.duration
         (Pomodoro.start |> SelectionSet.map ((*) 1000 >> Time.millisToPosix))
+        Pomodoro.test
 
 
 pomodoroStats : List Pomodoro -> PomodoroStats
