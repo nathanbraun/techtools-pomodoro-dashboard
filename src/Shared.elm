@@ -61,8 +61,6 @@ init flagsResult route =
             flagsResult
                 |> Result.withDefault (Flags Nothing Nothing True)
 
-        _ =
-            Debug.log "flags" flagsResult
     in
     ( { timezone = Loading
       , time = Time.millisToPosix 0
