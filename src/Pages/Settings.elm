@@ -74,7 +74,15 @@ update : Shared.Model -> Msg -> Model -> ( Model, Effect Msg )
 update shared msg model =
     case msg of
         UpdateUrl url ->
-            ( { model | inputUrl = Just url, changed = True }
+            let
+                newUrl =
+                    if url == "" then
+                        Nothing
+
+                    else
+                        Just url
+            in
+            ( { model | inputUrl = newUrl, changed = True }
             , Effect.none
             )
 
