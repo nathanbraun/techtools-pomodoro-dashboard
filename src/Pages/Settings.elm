@@ -37,6 +37,7 @@ type alias Model =
     { changed : Bool
     , inputUrl : Maybe String
     , inputKey : Maybe String
+    , localTest : Bool
     }
 
 
@@ -45,6 +46,7 @@ init shared () =
     ( { changed = False
       , inputUrl = shared.apiUrl
       , inputKey = shared.licenseKey
+      , localTest = False
       }
     , Effect.none
     )
@@ -60,6 +62,7 @@ type Msg
     | ClickCancel
     | ClickSave (Maybe String)
     | PressedKey Key
+    | ToggleTest
 
 
 type Key
@@ -110,6 +113,11 @@ update shared msg model =
         PressedKey _ ->
             ( model, Effect.none )
 
+        ToggleTest ->
+            ( { model | localTest = not model.localTest, changed = True }
+            , Effect.none
+            )
+
 
 
 -- SUBSCRIPTIONS
@@ -152,6 +160,7 @@ view shared model =
             [ div [ css [ Tw.max_w_md ] ]
                 [ inputLicense model.inputKey
                 , div [ css [ Tw.mt_4 ] ] [ inputApiUrl model.inputUrl ]
+                , div [ css [ Tw.mt_4 ] ] [ toggleTestButton model.localTest ]
                 , saveButton model.changed model.inputUrl
                 ]
             ]
@@ -323,6 +332,109 @@ inputLicense license =
                     ]
                     []
                 ]
+            ]
+        ]
+
+
+toggleTestButton : Bool -> Html Msg
+toggleTestButton enabled =
+    div
+        [ css
+            [ Tw.flex
+            , Tw.items_center
+            , Tw.justify_between
+            ]
+        ]
+        [ span
+            [ css
+                [ Tw.flex
+                , Tw.flex_grow
+                , Tw.flex_col
+                ]
+            ]
+            [ span
+                [ css
+                    [ Tw.text_sm
+                    , Tw.font_medium
+                    , Tw.leading_6
+                    , Tw.text_color Theme.gray_900
+                    ]
+                , Attr.id "availability-label"
+                ]
+                [ text "View Test Data" ]
+            , span
+                [ css
+                    [ Tw.text_sm
+                    , Tw.text_color Theme.gray_500
+                    , Tw.max_w_sm
+                    , Tw.mt_1
+                    ]
+                , Attr.id "availability-description"
+                ]
+                [ text "When this setting is enabled the dashboard will show data from test Pomodoros." ]
+            ]
+        , {- Enabled: "bg-indigo-600", Not Enabled: "bg-gray-200" -}
+          button
+            [ Attr.type_ "button"
+            , Events.onClick ToggleTest
+            , css
+                [ if enabled then
+                    Tw.bg_color Theme.indigo_600
+
+                  else
+                    Tw.bg_color Theme.gray_200
+                , Tw.relative
+                , Tw.inline_flex
+                , Tw.h_6
+                , Tw.w_11
+                , Tw.flex_shrink_0
+                , Tw.cursor_pointer
+                , Tw.rounded_full
+                , Tw.border_2
+                , Tw.border_color Theme.transparent
+                , Tw.transition_colors
+                , Tw.duration_200
+                , Tw.ease_in_out
+                , Css.focus
+                    [ Tw.outline_none
+                    , Tw.ring_2
+                    , Tw.ring_color Theme.indigo_600
+                    , Tw.ring_offset_2
+                    ]
+                ]
+            , Attr.attribute "role" "switch"
+            , if enabled then
+                Attr.attribute "aria-checked" "false"
+
+              else
+                Attr.attribute "aria-checked" "true"
+            , Attr.attribute "aria-labelledby" "availability-label"
+            , Attr.attribute "aria-describedby" "availability-description"
+            ]
+            [ {- Enabled: "translate-x-5", Not Enabled: "translate-x-0" -}
+              span
+                [ Attr.attribute "aria-hidden" "true"
+                , css
+                    [ if enabled then
+                        Tw.translate_x_5
+
+                      else
+                        Tw.translate_x_0
+                    , Tw.pointer_events_none
+                    , Tw.inline_block
+                    , Tw.h_5
+                    , Tw.w_5
+                    , Tw.transform
+                    , Tw.rounded_full
+                    , Tw.bg_color Theme.white
+                    , Tw.shadow
+                    , Tw.ring_0
+                    , Tw.transition
+                    , Tw.duration_200
+                    , Tw.ease_in_out
+                    ]
+                ]
+                []
             ]
         ]
 
