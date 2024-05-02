@@ -14,7 +14,7 @@ import Route.Path.Styled exposing (href)
 import Route.Styled as Route exposing (Route)
 import Shared
 import Shared.Msg exposing (Msg(..))
-import Tailwind.Theme as Tw
+import Tailwind.Theme as Theme
 import Tailwind.Utilities as Tw
 import Time exposing (Month(..))
 import Time.Extra exposing (Interval(..))
@@ -107,16 +107,8 @@ view shared model =
                                 ]
                                 [ text "Day" ]
                             , span [] [ text " | " ]
-                            , button [ onClick ToggleDisplayAggregatedHome ]
-                                [ h1
-                                    [ css []
-                                    ]
-                                    [ text "Project"
-                                    ]
-                                ]
-                            , span [] [ text " | " ]
                             , a [ href Path.Settings ]
-                                [ text "⚙" ]
+                                [ text "Settings" ]
                             ]
                         , h1 [ css [ Tw.mb_1 ] ]
                             [ text ("@ " ++ (shared.time |> viewDate zone))
@@ -163,6 +155,24 @@ view shared model =
                     , now = shared.time
                     }
                     |> Components.Table.view
+                , button
+                    [ css
+                        [ Tw.border_2
+                        , Tw.border_color Theme.black
+                        , Tw.rounded
+                        , Tw.mt_4
+                        , Tw.px_3
+                        , Tw.py_1
+                        ]
+                    , onClick
+                        ToggleDisplayAggregatedHome
+                    ]
+                    [ h1
+                        [ css []
+                        ]
+                        [ text "Toggle Project View"
+                        ]
+                    ]
                 ]
             }
 
