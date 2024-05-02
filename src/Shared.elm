@@ -19,7 +19,7 @@ import Graphql.Http
 import Json.Decode
 import RemoteData exposing (RemoteData(..))
 import Route exposing (Route)
-import Route.Path
+import Route.Path as Path
 import Shared.Model
 import Shared.Msg exposing (Key(..))
 import Task exposing (Task)
@@ -43,7 +43,7 @@ decoder =
     Json.Decode.map3 Flags
         (Json.Decode.field "apiUrl" (Json.Decode.maybe Json.Decode.string))
         (Json.Decode.field "licenseKey" (Json.Decode.maybe Json.Decode.string))
-        (Json.Decode.field "testDataFlag" (Json.Decode.bool))
+        (Json.Decode.field "testDataFlag" Json.Decode.bool)
 
 
 
@@ -91,7 +91,7 @@ init flagsResult route =
                     )
 
             Nothing ->
-                Effect.none
+                Effect.pushRoutePath Path.Settings
         ]
     )
 

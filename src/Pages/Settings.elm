@@ -145,7 +145,7 @@ view : Shared.Model -> Model -> View Msg
 view shared model =
     { title = "Settings"
     , body =
-        [ div []
+        [ div [ css [ Tw.max_w_md ] ]
             [ div [ css [ Tw.mb_4 ] ]
                 [ h1
                     [ css
@@ -160,7 +160,10 @@ view shared model =
                     ]
                 ]
             ]
-        , form []
+        , p [ css [ Tw.max_w_md ] ]
+            [ text "Add your Pomodro API URL and license key here."
+            ]
+        , form [ css [ Tw.mt_4 ] ]
             [ div [ css [ Tw.max_w_md ] ]
                 [ inputLicense model.inputKey
                 , div [ css [ Tw.mt_4 ] ] [ inputApiUrl model.inputUrl ]
