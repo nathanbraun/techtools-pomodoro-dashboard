@@ -235,10 +235,10 @@ toggleDisplay =
     SendSharedMsg Shared.Msg.ToggleDisplayAggregated
 
 
-saveSettings : Maybe String -> Maybe String -> Effect msg
-saveSettings apiUrl licenseKey =
+saveSettings : Maybe String -> Maybe String -> Bool -> Effect msg
+saveSettings apiUrl licenseKey test =
     batch
-        [ SendSharedMsg (Shared.Msg.SaveSettings apiUrl licenseKey)
+        [ SendSharedMsg (Shared.Msg.SaveSettings apiUrl licenseKey test)
         , sendOut (ApiUrl apiUrl)
         , sendOut (LicenseKey licenseKey)
         ]

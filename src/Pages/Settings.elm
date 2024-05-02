@@ -46,7 +46,7 @@ init shared () =
     ( { changed = False
       , inputUrl = shared.apiUrl
       , inputKey = shared.licenseKey
-      , localTest = False
+      , localTest = shared.showTestData
       }
     , Effect.none
     )
@@ -98,13 +98,17 @@ update shared msg model =
 
         ClickSave url ->
             ( { model | changed = False }
-            , Effect.saveSettings model.inputUrl model.inputKey
+            , Effect.saveSettings model.inputUrl
+                model.inputKey
+                model.localTest
             )
 
         PressedKey (Control "Enter") ->
             if model.changed then
                 ( { model | changed = False }
-                , Effect.saveSettings model.inputUrl model.inputKey
+                , Effect.saveSettings model.inputUrl
+                    model.inputKey
+                    model.localTest
                 )
 
             else

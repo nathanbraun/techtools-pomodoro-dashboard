@@ -17,4 +17,5 @@ type alias Model =
     , displayAggregated : Bool
     , apiUrl : Maybe String
     , licenseKey : Maybe String
+    , showTestData : Bool
     }

@@ -1,4 +1,4 @@
-module Shared.Msg exposing (Msg(..), Key(..))
+module Shared.Msg exposing (Key(..), Msg(..))
 
 {-| -}
 
@@ -7,6 +7,7 @@ import Api.Project as Project exposing (Project)
 import RemoteData exposing (RemoteData)
 import Time
 import TimeZone
+
 
 {-| Normally, this value would live in "Shared.elm"
 but that would lead to a circular dependency import cycle.
@@ -22,7 +23,8 @@ type Msg
     | GotProjects (WebData (List Project))
     | ToggleDisplayAggregated
     | PressedKey Key
-    | SaveSettings (Maybe String) (Maybe String)
+    | SaveSettings (Maybe String) (Maybe String) Bool
+
 
 type Key
     = Character Char

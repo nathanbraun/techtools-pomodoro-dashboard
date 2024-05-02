@@ -59,8 +59,8 @@ init flagsResult route =
             flagsResult
                 |> Result.withDefault (Flags Nothing Nothing)
 
-        _ = Debug.log "flags" flagsResult
-
+        _ =
+            Debug.log "flags" flagsResult
     in
     ( { timezone = Loading
       , time = Time.millisToPosix 0
@@ -68,6 +68,7 @@ init flagsResult route =
       , displayAggregated = True
       , apiUrl = flags.apiUrl
       , licenseKey = flags.licenseKey
+      , showTestData = True
       }
     , Effect.batch
         [ Effect.sendCmd
@@ -139,8 +140,8 @@ update route msg model =
             , Effect.none
             )
 
-        Shared.Msg.SaveSettings url key ->
-            ( { model | apiUrl = url, licenseKey = key }
+        Shared.Msg.SaveSettings url key test ->
+            ( { model | apiUrl = url, licenseKey = key, showTestData = test }
             , Effect.none
             )
 
