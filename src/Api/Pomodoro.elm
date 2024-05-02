@@ -28,6 +28,7 @@ type PomoStatsInterval
     | WeekLast
     | Days30
     | Date
+    | All
 
 
 statsStartEnd :
@@ -86,6 +87,13 @@ statsStartEnd interval zone now =
                     now
             , end = now
             , heading = "30 Days"
+            }
+
+        All ->
+            { start =
+                Time.Extra.add Year -100 zone now
+            , end = now
+            , heading = "All Time"
             }
 
 
