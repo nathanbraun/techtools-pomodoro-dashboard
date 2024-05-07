@@ -1,4 +1,9 @@
-module Api.Health exposing (AppStatus(..), Health, MissingParameter(..), queryHealth)
+module Api.Health exposing
+    ( AppStatus(..)
+    , Health
+    , MissingParameter(..)
+    , queryHealth
+    )
 
 import Api.Project exposing (Project)
 import Graphql.Operation exposing (RootQuery)

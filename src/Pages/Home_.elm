@@ -81,215 +81,132 @@ subscriptions model =
 
 view : Shared.Model -> Model -> View Msg
 view shared model =
-    case shared.timezone of
-        Success zone ->
-            case shared.appStatus of
-                AppData projects ->
-                    { title = "Pomodoro.ing"
-                    , body =
-                        [ div []
-                            [ div [ css [ Tw.mb_4 ] ]
-                                [ h1
-                                    [ css
-                                        [ Tw.font_bold
-                                        , Tw.text_2xl
-                                        , Tw.mb_1
-                                        , Tw.text_left
-                                        ]
-                                    ]
-                                    [ a [ href Path.Home_ ]
-                                        [ text "Pomodoro.ing" ]
-                                    ]
-                                , div [ css [] ]
-                                    [ a [ href Path.Settings ]
-                                        [ text "Settings" ]
-                                    ]
-                                , h1 [ css [ Tw.mb_1 ] ]
-                                    [ text ("@ " ++ (shared.time |> viewDate zone))
-                                    ]
-                                ]
-                            ]
-                        , Components.Table.new
-                            { aggregate = shared.displayAggregated
-                            , projects = projects
-                            , interval = Today
-                            , zone = zone
-                            , now = shared.time
-                            , test = shared.showTestData
-                            }
-                            |> Components.Table.view
-                        , Components.Table.new
-                            { aggregate = shared.displayAggregated
-                            , projects = projects
-                            , interval = Yesterday
-                            , zone = zone
-                            , now = shared.time
-                            , test = shared.showTestData
-                            }
-                            |> Components.Table.view
-                        , Components.Table.new
-                            { aggregate = shared.displayAggregated
-                            , projects = projects
-                            , interval = WeekNow
-                            , zone = zone
-                            , now = shared.time
-                            , test = shared.showTestData
-                            }
-                            |> Components.Table.view
-                        , Components.Table.new
-                            { aggregate = shared.displayAggregated
-                            , projects = projects
-                            , interval = WeekLast
-                            , zone = zone
-                            , now = shared.time
-                            , test = shared.showTestData
-                            }
-                            |> Components.Table.view
-                        , Components.Table.new
-                            { aggregate = shared.displayAggregated
-                            , projects = projects
-                            , interval = Days30
-                            , zone = zone
-                            , now = shared.time
-                            , test = shared.showTestData
-                            }
-                            |> Components.Table.view
-                        , button
+    case shared.appStatus of
+        AppData projects ->
+            { title = "Pomodoro.ing"
+            , body =
+                [ div []
+                    [ div [ css [ Tw.mb_4 ] ]
+                        [ h1
                             [ css
-                                [ Tw.border_2
-                                , Tw.border_color Theme.black
-                                , Tw.rounded
-                                , Tw.mt_4
-                                , Tw.px_3
-                                , Tw.py_1
+                                [ Tw.font_bold
+                                , Tw.text_2xl
+                                , Tw.mb_1
+                                , Tw.text_left
                                 ]
-                            , onClick
-                                ToggleDisplayAggregatedHome
                             ]
+                            [ a [ href Path.Home_ ]
+                                [ text "Pomodoro.ing" ]
+                            ]
+                        , div [ css [] ]
+                            [ a [ href Path.Settings ]
+                                [ text "Settings" ]
+                            ]
+                        , h1 [ css [ Tw.mb_1 ] ]
+                            [ text ("@ " ++ (shared.time |> viewDate shared.timezone))
+                            ]
+                        ]
+                    ]
+                , Components.Table.new
+                    { aggregate = shared.displayAggregated
+                    , projects = projects
+                    , interval = Today
+                    , zone = shared.timezone
+                    , now = shared.time
+                    , test = shared.showTestData
+                    }
+                    |> Components.Table.view
+                , Components.Table.new
+                    { aggregate = shared.displayAggregated
+                    , projects = projects
+                    , interval = Yesterday
+                    , zone = shared.timezone
+                    , now = shared.time
+                    , test = shared.showTestData
+                    }
+                    |> Components.Table.view
+                , Components.Table.new
+                    { aggregate = shared.displayAggregated
+                    , projects = projects
+                    , interval = WeekNow
+                    , zone = shared.timezone
+                    , now = shared.time
+                    , test = shared.showTestData
+                    }
+                    |> Components.Table.view
+                , Components.Table.new
+                    { aggregate = shared.displayAggregated
+                    , projects = projects
+                    , interval = WeekLast
+                    , zone = shared.timezone
+                    , now = shared.time
+                    , test = shared.showTestData
+                    }
+                    |> Components.Table.view
+                , Components.Table.new
+                    { aggregate = shared.displayAggregated
+                    , projects = projects
+                    , interval = Days30
+                    , zone = shared.timezone
+                    , now = shared.time
+                    , test = shared.showTestData
+                    }
+                    |> Components.Table.view
+                , button
+                    [ css
+                        [ Tw.border_2
+                        , Tw.border_color Theme.black
+                        , Tw.rounded
+                        , Tw.mt_4
+                        , Tw.px_3
+                        , Tw.py_1
+                        ]
+                    , onClick
+                        ToggleDisplayAggregatedHome
+                    ]
+                    [ h1
+                        [ css []
+                        ]
+                        [ text "Toggle Project View"
+                        ]
+                    ]
+                ]
+            }
+
+        InitialApp ->
+            { title = "Home"
+            , body = [ div [] [ text "Loading..." ] ]
+            }
+
+        MissingRequiredParameters missing ->
+            { title = "Pomodoro.ing"
+            , body =
+                [ div [ css [ Tw.max_w_md ] ]
+                    [ div []
+                        [ div [ css [ Tw.mb_4 ] ]
                             [ h1
-                                [ css []
+                                [ css
+                                    [ Tw.font_bold
+                                    , Tw.text_2xl
+                                    , Tw.mb_1
+                                    , Tw.text_left
+                                    ]
                                 ]
-                                [ text "Toggle Project View"
+                                [ a [ href Path.Home_ ]
+                                    [ text "Pomodoro.ing" ]
+                                ]
+                            , h1 [ css [ Tw.mb_1 ] ]
+                                [ text ("@ " ++ (shared.time |> viewDate shared.timezone))
                                 ]
                             ]
                         ]
-                    }
-
-                InitialApp ->
-                    { title = "Home"
-                    , body = [ div [] [ text "Loading..." ] ]
-                    }
-
-                MissingRequiredParameters missing ->
-                    { title = "Pomodoro.ing"
-                    , body =
-                        [ div [ css [ Tw.max_w_md ] ]
-                            [ div []
-                                [ div [ css [ Tw.mb_4 ] ]
-                                    [ h1
-                                        [ css
-                                            [ Tw.font_bold
-                                            , Tw.text_2xl
-                                            , Tw.mb_1
-                                            , Tw.text_left
-                                            ]
-                                        ]
-                                        [ a [ href Path.Home_ ]
-                                            [ text "Pomodoro.ing" ]
-                                        ]
-                                    , h1 [ css [ Tw.mb_1 ] ]
-                                        [ text ("@ " ++ (shared.time |> viewDate zone))
-                                        ]
-                                    ]
-                                ]
-                            , case missing of
-                                MissingUrl ->
-                                    div []
-                                        [ p []
-                                            [ text "No API url set." ]
-                                        , p [ css [ Tw.mt_2 ] ]
-                                            [ text "Go to the "
-                                            , a
-                                                [ href Path.Settings
-                                                , css
-                                                    [ Tw.text_color Theme.blue_600
-                                                    , Tw.underline
-                                                    ]
-                                                ]
-                                                [ text "settings page" ]
-                                            , text " to add it."
-                                            ]
-                                        ]
-
-                                MissingKey ->
-                                    div []
-                                        [ p []
-                                            [ text "No license key set." ]
-                                        , p [ css [ Tw.mt_2 ] ]
-                                            [ text "Go to the "
-                                            , a
-                                                [ href Path.Settings
-                                                , css
-                                                    [ Tw.text_color Theme.blue_600
-                                                    , Tw.underline
-                                                    ]
-                                                ]
-                                                [ text "settings page" ]
-                                            , text " to add it."
-                                            ]
-                                        ]
-
-                                MissingBoth ->
-                                    div []
-                                        [ p []
-                                            [ text "No API url or license key set." ]
-                                        , p [ css [ Tw.mt_2 ] ]
-                                            [ text "Go to the "
-                                            , a
-                                                [ href Path.Settings
-                                                , css
-                                                    [ Tw.text_color Theme.blue_600
-                                                    , Tw.underline
-                                                    ]
-                                                ]
-                                                [ text "settings page" ]
-                                            , text " to add them."
-                                            ]
-                                        ]
-                            ]
-                        ]
-                    }
-
-                ApiError ->
-                    { title = "Home"
-                    , body = [ div [] [ text "Api error" ] ]
-                    }
-
-                Unauthorized ->
-                    { title = "Pomodoro.ing"
-                    , body =
-                        [ div [ css [ Tw.max_w_md ] ]
-                            [ div []
-                                [ div [ css [ Tw.mb_4 ] ]
-                                    [ h1
-                                        [ css
-                                            [ Tw.font_bold
-                                            , Tw.text_2xl
-                                            , Tw.mb_1
-                                            , Tw.text_left
-                                            ]
-                                        ]
-                                        [ a [ href Path.Home_ ]
-                                            [ text "Pomodoro.ing" ]
-                                        ]
-                                    , h1 [ css [ Tw.mb_1 ] ]
-                                        [ text ("@ " ++ (shared.time |> viewDate zone))
-                                        ]
-                                    ]
-                                ]
-                            , div []
+                    , case missing of
+                        MissingUrl ->
+                            div []
                                 [ p []
-                                    [ text "Your API is returning data, but the license key in "
+                                    [ text "No API url set." ]
+                                , p [ css [ Tw.mt_2 ] ]
+                                    [ text "Go to the "
                                     , a
                                         [ href Path.Settings
                                         , css
@@ -297,61 +214,136 @@ view shared model =
                                             , Tw.underline
                                             ]
                                         ]
-                                        [ text "settings" ]
-                                    , text " doesn't match the key on your server."
-                                    ]
-                                , p [ css [ Tw.mt_4 ] ]
-                                    [ text "Double check and make sure they're the same."
+                                        [ text "settings page" ]
+                                    , text " to add it."
                                     ]
                                 ]
-                            ]
-                        ]
-                    }
 
-                NoData ->
-                    { title = "Pomodoro.ing"
-                    , body =
-                        [ div [ css [ Tw.max_w_md ] ]
-                            [ div []
-                                [ div [ css [ Tw.mb_4 ] ]
-                                    [ h1
-                                        [ css
-                                            [ Tw.font_bold
-                                            , Tw.text_2xl
-                                            , Tw.mb_1
-                                            , Tw.text_left
+                        MissingKey ->
+                            div []
+                                [ p []
+                                    [ text "No license key set." ]
+                                , p [ css [ Tw.mt_2 ] ]
+                                    [ text "Go to the "
+                                    , a
+                                        [ href Path.Settings
+                                        , css
+                                            [ Tw.text_color Theme.blue_600
+                                            , Tw.underline
                                             ]
                                         ]
-                                        [ a [ href Path.Home_ ]
-                                            [ text "Pomodoro.ing" ]
-                                        ]
-                                    , h1 [ css [ Tw.mb_1 ] ]
-                                        [ text ("@ " ++ (shared.time |> viewDate zone))
-                                        ]
+                                        [ text "settings page" ]
+                                    , text " to add it."
                                     ]
                                 ]
-                            , div []
-                                [ p []
-                                    [ text "Your API is working, but you haven't added any data yet."
-                                    ]
-                                , p [ css [ Tw.mt_4 ] ]
-                                    [ text "Try typing:"
-                                    ]
 
-                                , p [ css [ Tw.mt_4 ] ]
-                                    [ text "$ pomo -t "
+                        MissingBoth ->
+                            div []
+                                [ p []
+                                    [ text "No API url or license key set." ]
+                                , p [ css [ Tw.mt_2 ] ]
+                                    [ text "Go to the "
+                                    , a
+                                        [ href Path.Settings
+                                        , css
+                                            [ Tw.text_color Theme.blue_600
+                                            , Tw.underline
+                                            ]
+                                        ]
+                                        [ text "settings page" ]
+                                    , text " to add them."
                                     ]
-                                , p [ css [ Tw.mt_4 ] ]
-                                    [ text "in the command line to add some test data, then refresh the page."
+                                ]
+                    ]
+                ]
+            }
+
+        ApiError ->
+            { title = "Home"
+            , body = [ div [] [ text "Api error" ] ]
+            }
+
+        Unauthorized ->
+            { title = "Pomodoro.ing"
+            , body =
+                [ div [ css [ Tw.max_w_md ] ]
+                    [ div []
+                        [ div [ css [ Tw.mb_4 ] ]
+                            [ h1
+                                [ css
+                                    [ Tw.font_bold
+                                    , Tw.text_2xl
+                                    , Tw.mb_1
+                                    , Tw.text_left
                                     ]
+                                ]
+                                [ a [ href Path.Home_ ]
+                                    [ text "Pomodoro.ing" ]
+                                ]
+                            , h1 [ css [ Tw.mb_1 ] ]
+                                [ text ("@ " ++ (shared.time |> viewDate shared.timezone))
                                 ]
                             ]
                         ]
-                    }
+                    , div []
+                        [ p []
+                            [ text "Your API is returning data, but the license key in "
+                            , a
+                                [ href Path.Settings
+                                , css
+                                    [ Tw.text_color Theme.blue_600
+                                    , Tw.underline
+                                    ]
+                                ]
+                                [ text "settings" ]
+                            , text " doesn't match the key on your server."
+                            ]
+                        , p [ css [ Tw.mt_4 ] ]
+                            [ text "Double check and make sure they're the same."
+                            ]
+                        ]
+                    ]
+                ]
+            }
 
-        _ ->
-            { title = "Home"
-            , body = [ div [] [ text "Loading..." ] ]
+        NoData ->
+            { title = "Pomodoro.ing"
+            , body =
+                [ div [ css [ Tw.max_w_md ] ]
+                    [ div []
+                        [ div [ css [ Tw.mb_4 ] ]
+                            [ h1
+                                [ css
+                                    [ Tw.font_bold
+                                    , Tw.text_2xl
+                                    , Tw.mb_1
+                                    , Tw.text_left
+                                    ]
+                                ]
+                                [ a [ href Path.Home_ ]
+                                    [ text "Pomodoro.ing" ]
+                                ]
+                            , h1 [ css [ Tw.mb_1 ] ]
+                                [ text ("@ " ++ (shared.time |> viewDate shared.timezone))
+                                ]
+                            ]
+                        ]
+                    , div []
+                        [ p []
+                            [ text "Your API is working, but you haven't added any data yet."
+                            ]
+                        , p [ css [ Tw.mt_4 ] ]
+                            [ text "Try typing:"
+                            ]
+                        , p [ css [ Tw.mt_4 ] ]
+                            [ text "$ pomo -t "
+                            ]
+                        , p [ css [ Tw.mt_4 ] ]
+                            [ text "in the command line to add some test data, then refresh the page."
+                            ]
+                        ]
+                    ]
+                ]
             }
 
 

@@ -21,7 +21,6 @@ import Interop exposing (OutgoingData(..))
 import Json.Decode
 import RemoteData exposing (RemoteData(..))
 import Route exposing (Route)
-import Route.Path as Path
 import Shared.Model
 import Shared.Msg exposing (Key(..))
 import Task
@@ -65,7 +64,7 @@ init flagsResult route =
     in
     case ( flags.apiUrl, flags.licenseKey ) of
         ( Just url, Just key ) ->
-            ( { timezone = Loading
+            ( { timezone = Time.utc
               , time = Time.millisToPosix 0
               , displayAggregated = True
               , apiUrl = Just url
@@ -92,7 +91,7 @@ init flagsResult route =
             )
 
         ( Nothing, Just key ) ->
-            ( { timezone = Loading
+            ( { timezone = Time.utc
               , time = Time.millisToPosix 0
               , displayAggregated = True
               , apiUrl = flags.apiUrl
@@ -111,7 +110,7 @@ init flagsResult route =
             )
 
         ( Just url, Nothing ) ->
-            ( { timezone = Loading
+            ( { timezone = Time.utc
               , time = Time.millisToPosix 0
               , displayAggregated = True
               , apiUrl = flags.apiUrl
@@ -130,7 +129,7 @@ init flagsResult route =
             )
 
         ( Nothing, Nothing ) ->
-            ( { timezone = Loading
+            ( { timezone = Time.utc
               , time = Time.millisToPosix 0
               , displayAggregated = True
               , apiUrl = flags.apiUrl
@@ -170,8 +169,13 @@ update route msg model =
             , Effect.none
             )
 
-        Shared.Msg.ReceiveTimeZone response ->
-            ( { model | timezone = response |> RemoteData.map Tuple.second }
+        Shared.Msg.ReceiveTimeZone (Success response) ->
+            ( { model | timezone = response |> Tuple.second }
+            , Effect.none
+            )
+
+        Shared.Msg.ReceiveTimeZone _ ->
+            ( { model | timezone = Time.utc }
             , Effect.none
             )
 

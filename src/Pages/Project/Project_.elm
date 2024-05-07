@@ -93,20 +93,10 @@ subscriptions model =
 
 view : Shared.Model -> Model -> View Msg
 view shared model =
-    case ( shared.timezone, model.project ) of
-        ( Success zone, Success project ) ->
+    case model.project of
+        Success project ->
             { title = "Project"
-            , body = [ viewProject shared zone project ]
-            }
-
-        ( Failure _, _ ) ->
-            { title = "Error"
-            , body = [ div [] [ text "Error" ] ]
-            }
-
-        ( _, Failure _ ) ->
-            { title = "Error"
-            , body = [ div [] [ text "Error" ] ]
+            , body = [ viewProject shared shared.timezone project ]
             }
 
         _ ->
