@@ -1,4 +1,4 @@
-module Api.Health exposing (AppStatus(..), Health, queryHealth)
+module Api.Health exposing (AppStatus(..), Health, MissingParameter(..), queryHealth)
 
 import Api.Project exposing (Project)
 import Graphql.Operation exposing (RootQuery)
@@ -7,9 +7,15 @@ import Pomo.Object.Health as Health
 import Pomo.Query as Query
 
 
+type MissingParameter
+    = MissingUrl
+    | MissingKey
+    | MissingBoth
+
+
 type AppStatus
     = InitialApp
-    | MissingRequiredParameters
+    | MissingRequiredParameters MissingParameter
     | ApiError
     | Unauthorized
     | NoData

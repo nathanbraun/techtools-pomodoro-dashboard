@@ -22,7 +22,7 @@ type Msg
     | ReceiveTimeZone (RemoteData TimeZone.Error ( String, Time.Zone ))
     | GetTime Time.Posix
     | GotProjects (WebData (List Project))
-    | GotHealth (WebData Health)
+    | GotHealth String (WebData Health)
     | ToggleDisplayAggregated
     | PressedKey Key
     | SaveSettings (Maybe String) (Maybe String) Bool

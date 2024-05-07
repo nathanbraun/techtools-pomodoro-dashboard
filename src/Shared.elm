@@ -12,11 +12,12 @@ module Shared exposing
 
 -}
 
-import Api.Health as Health exposing (AppStatus(..))
+import Api.Health as Health exposing (AppStatus(..), MissingParameter(..))
 import Api.Project as Project
 import Browser.Events
 import Effect exposing (Effect)
 import Graphql.Http
+import Interop exposing (OutgoingData(..))
 import Json.Decode
 import RemoteData exposing (RemoteData(..))
 import Route exposing (Route)
@@ -84,20 +85,20 @@ init flagsResult route =
                         |> Graphql.Http.queryRequest ("https://" ++ url)
                         |> Graphql.Http.send
                             (RemoteData.fromResult
-                                >> Shared.Msg.GotHealth
+                                >> Shared.Msg.GotHealth url
                             )
                     )
                 ]
             )
 
-        ( _, _ ) ->
+        ( Nothing, Just key ) ->
             ( { timezone = Loading
               , time = Time.millisToPosix 0
               , displayAggregated = True
               , apiUrl = flags.apiUrl
               , licenseKey = flags.licenseKey
               , showTestData = flags.testDataFlag
-              , appStatus = MissingRequiredParameters
+              , appStatus = MissingRequiredParameters MissingUrl
               }
             , Effect.batch
                 [ Effect.sendCmd
@@ -106,7 +107,44 @@ init flagsResult route =
                             (RemoteData.fromResult >> Shared.Msg.ReceiveTimeZone)
                     )
                 , Effect.sendCmd (Task.perform Shared.Msg.GetTime Time.now)
-                , Effect.pushRoutePath Path.Settings
+                ]
+            )
+
+        ( Just url, Nothing ) ->
+            ( { timezone = Loading
+              , time = Time.millisToPosix 0
+              , displayAggregated = True
+              , apiUrl = flags.apiUrl
+              , licenseKey = flags.licenseKey
+              , showTestData = flags.testDataFlag
+              , appStatus = MissingRequiredParameters MissingKey
+              }
+            , Effect.batch
+                [ Effect.sendCmd
+                    (TimeZone.getZone
+                        |> Task.attempt
+                            (RemoteData.fromResult >> Shared.Msg.ReceiveTimeZone)
+                    )
+                , Effect.sendCmd (Task.perform Shared.Msg.GetTime Time.now)
+                ]
+            )
+
+        ( Nothing, Nothing ) ->
+            ( { timezone = Loading
+              , time = Time.millisToPosix 0
+              , displayAggregated = True
+              , apiUrl = flags.apiUrl
+              , licenseKey = flags.licenseKey
+              , showTestData = flags.testDataFlag
+              , appStatus = MissingRequiredParameters MissingBoth
+              }
+            , Effect.batch
+                [ Effect.sendCmd
+                    (TimeZone.getZone
+                        |> Task.attempt
+                            (RemoteData.fromResult >> Shared.Msg.ReceiveTimeZone)
+                    )
+                , Effect.sendCmd (Task.perform Shared.Msg.GetTime Time.now)
                 ]
             )
 
@@ -142,27 +180,38 @@ update route msg model =
             , Effect.none
             )
 
-        Shared.Msg.GotProjects response ->
+        Shared.Msg.GotProjects _ ->
             ( { model | appStatus = ApiError }
             , Effect.none
             )
 
-        Shared.Msg.GotHealth response ->
-            ( model
-            , case model.apiUrl of
-                Just url ->
-                    Effect.sendCmd
-                        (Project.queryProjects
-                            |> Graphql.Http.queryRequest ("https://" ++ url)
-                            |> Graphql.Http.send
-                                (RemoteData.fromResult
-                                    >> Shared.Msg.GotProjects
+        Shared.Msg.GotHealth url healthResponse ->
+            case healthResponse of
+                Success response ->
+                    case ( response.authorized, response.anyPomos ) of
+                        ( True, True ) ->
+                            ( model
+                            , Effect.sendCmd
+                                (Project.queryProjects
+                                    |> Graphql.Http.queryRequest
+                                        ("https://"
+                                            ++ url
+                                        )
+                                    |> Graphql.Http.send
+                                        (RemoteData.fromResult
+                                            >> Shared.Msg.GotProjects
+                                        )
                                 )
-                        )
+                            )
 
-                Nothing ->
-                    Effect.pushRoutePath Path.Settings
-            )
+                        ( False, _ ) ->
+                            ( { model | appStatus = Unauthorized }, Effect.none )
+
+                        ( True, False ) ->
+                            ( { model | appStatus = NoData }, Effect.none )
+
+                _ ->
+                    ( { model | appStatus = ApiError }, Effect.none )
 
         Shared.Msg.ToggleDisplayAggregated ->
             ( { model | displayAggregated = not model.displayAggregated }

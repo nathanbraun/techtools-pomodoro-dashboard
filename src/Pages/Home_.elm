@@ -1,6 +1,6 @@
 module Pages.Home_ exposing (Model, Msg, page)
 
-import Api.Health exposing (AppStatus(..))
+import Api.Health exposing (AppStatus(..), MissingParameter(..))
 import Api.Pomodoro exposing (PomoStatsInterval(..))
 import Api.Project exposing (Project)
 import Components.Table
@@ -83,184 +83,197 @@ view : Shared.Model -> Model -> View Msg
 view shared model =
     case shared.timezone of
         Success zone ->
-            case ( shared.apiUrl, shared.licenseKey ) of
-                ( Nothing, _ ) ->
-                    { title = "Pomodoros"
+            case shared.appStatus of
+                AppData projects ->
+                    { title = "Pomodoro.ing"
                     , body =
-                        [ div [ css [ Tw.max_w_md ] ]
-                            [ div []
-                                [ div [ css [ Tw.mb_4 ] ]
-                                    [ h1
-                                        [ css
-                                            [ Tw.font_bold
-                                            , Tw.text_2xl
-                                            , Tw.mb_1
-                                            , Tw.text_left
-                                            ]
-                                        ]
-                                        [ a [ href Path.Home_ ]
-                                            [ text "Pomodoros" ]
-                                        ]
-                                    , h1 [ css [ Tw.mb_1 ] ]
-                                        [ text ("@ " ++ (shared.time |> viewDate zone))
-                                        ]
-                                    ]
-                                ]
-                            , p []
-                                [ text "No API url defined." ]
-                            , p [ css [ Tw.mt_2 ] ]
-                                [ text "Go to the "
-                                , a
-                                    [ href Path.Settings
-                                    , css
-                                        [ Tw.text_color Theme.blue_600
-                                        , Tw.underline
-                                        ]
-                                    ]
-                                    [ text "settings page" ]
-                                , text " to add it."
-                                ]
-                            ]
-                        ]
-                    }
-
-                ( Just _, Nothing ) ->
-                    { title = "Pomodoros"
-                    , body =
-                        [ div [ css [ Tw.max_w_md ] ]
-                            [ div []
-                                [ div [ css [ Tw.mb_4 ] ]
-                                    [ h1
-                                        [ css
-                                            [ Tw.font_bold
-                                            , Tw.text_2xl
-                                            , Tw.mb_1
-                                            , Tw.text_left
-                                            ]
-                                        ]
-                                        [ a [ href Path.Home_ ]
-                                            [ text "Pomodoros" ]
-                                        ]
-                                    , h1 [ css [ Tw.mb_1 ] ]
-                                        [ text ("@ " ++ (shared.time |> viewDate zone))
-                                        ]
-                                    ]
-                                ]
-                            , p []
-                                [ text "No license key defined." ]
-                            , p [ css [ Tw.mt_2 ] ]
-                                [ text "Go to the "
-                                , a
-                                    [ href Path.Settings
-                                    , css
-                                        [ Tw.text_color Theme.blue_600
-                                        , Tw.underline
-                                        ]
-                                    ]
-                                    [ text "settings page" ]
-                                , text " to add it."
-                                ]
-                            ]
-                        ]
-                    }
-
-                ( Just _, _ ) ->
-                    case shared.appStatus of
-                        AppData projects ->
-                            { title = "Pomodoros"
-                            , body =
-                                [ div []
-                                    [ div [ css [ Tw.mb_4 ] ]
-                                        [ h1
-                                            [ css
-                                                [ Tw.font_bold
-                                                , Tw.text_2xl
-                                                , Tw.mb_1
-                                                , Tw.text_left
-                                                ]
-                                            ]
-                                            [ a [ href Path.Home_ ]
-                                                [ text "Pomodoros" ]
-                                            ]
-                                        , div [ css [] ]
-                                            [ a [ href Path.Settings ]
-                                                [ text "Settings" ]
-                                            ]
-                                        , h1 [ css [ Tw.mb_1 ] ]
-                                            [ text ("@ " ++ (shared.time |> viewDate zone))
-                                            ]
-                                        ]
-                                    ]
-                                , Components.Table.new
-                                    { aggregate = shared.displayAggregated
-                                    , projects = projects
-                                    , interval = Today
-                                    , zone = zone
-                                    , now = shared.time
-                                    , test = shared.showTestData
-                                    }
-                                    |> Components.Table.view
-                                , Components.Table.new
-                                    { aggregate = shared.displayAggregated
-                                    , projects = projects
-                                    , interval = Yesterday
-                                    , zone = zone
-                                    , now = shared.time
-                                    , test = shared.showTestData
-                                    }
-                                    |> Components.Table.view
-                                , Components.Table.new
-                                    { aggregate = shared.displayAggregated
-                                    , projects = projects
-                                    , interval = WeekNow
-                                    , zone = zone
-                                    , now = shared.time
-                                    , test = shared.showTestData
-                                    }
-                                    |> Components.Table.view
-                                , Components.Table.new
-                                    { aggregate = shared.displayAggregated
-                                    , projects = projects
-                                    , interval = WeekLast
-                                    , zone = zone
-                                    , now = shared.time
-                                    , test = shared.showTestData
-                                    }
-                                    |> Components.Table.view
-                                , Components.Table.new
-                                    { aggregate = shared.displayAggregated
-                                    , projects = projects
-                                    , interval = Days30
-                                    , zone = zone
-                                    , now = shared.time
-                                    , test = shared.showTestData
-                                    }
-                                    |> Components.Table.view
-                                , button
+                        [ div []
+                            [ div [ css [ Tw.mb_4 ] ]
+                                [ h1
                                     [ css
-                                        [ Tw.border_2
-                                        , Tw.border_color Theme.black
-                                        , Tw.rounded
-                                        , Tw.mt_4
-                                        , Tw.px_3
-                                        , Tw.py_1
+                                        [ Tw.font_bold
+                                        , Tw.text_2xl
+                                        , Tw.mb_1
+                                        , Tw.text_left
                                         ]
-                                    , onClick
-                                        ToggleDisplayAggregatedHome
                                     ]
+                                    [ a [ href Path.Home_ ]
+                                        [ text "Pomodoro.ing" ]
+                                    ]
+                                , div [ css [] ]
+                                    [ a [ href Path.Settings ]
+                                        [ text "Settings" ]
+                                    ]
+                                , h1 [ css [ Tw.mb_1 ] ]
+                                    [ text ("@ " ++ (shared.time |> viewDate zone))
+                                    ]
+                                ]
+                            ]
+                        , Components.Table.new
+                            { aggregate = shared.displayAggregated
+                            , projects = projects
+                            , interval = Today
+                            , zone = zone
+                            , now = shared.time
+                            , test = shared.showTestData
+                            }
+                            |> Components.Table.view
+                        , Components.Table.new
+                            { aggregate = shared.displayAggregated
+                            , projects = projects
+                            , interval = Yesterday
+                            , zone = zone
+                            , now = shared.time
+                            , test = shared.showTestData
+                            }
+                            |> Components.Table.view
+                        , Components.Table.new
+                            { aggregate = shared.displayAggregated
+                            , projects = projects
+                            , interval = WeekNow
+                            , zone = zone
+                            , now = shared.time
+                            , test = shared.showTestData
+                            }
+                            |> Components.Table.view
+                        , Components.Table.new
+                            { aggregate = shared.displayAggregated
+                            , projects = projects
+                            , interval = WeekLast
+                            , zone = zone
+                            , now = shared.time
+                            , test = shared.showTestData
+                            }
+                            |> Components.Table.view
+                        , Components.Table.new
+                            { aggregate = shared.displayAggregated
+                            , projects = projects
+                            , interval = Days30
+                            , zone = zone
+                            , now = shared.time
+                            , test = shared.showTestData
+                            }
+                            |> Components.Table.view
+                        , button
+                            [ css
+                                [ Tw.border_2
+                                , Tw.border_color Theme.black
+                                , Tw.rounded
+                                , Tw.mt_4
+                                , Tw.px_3
+                                , Tw.py_1
+                                ]
+                            , onClick
+                                ToggleDisplayAggregatedHome
+                            ]
+                            [ h1
+                                [ css []
+                                ]
+                                [ text "Toggle Project View"
+                                ]
+                            ]
+                        ]
+                    }
+
+                InitialApp ->
+                    { title = "Home"
+                    , body = [ div [] [ text "Loading..." ] ]
+                    }
+
+                MissingRequiredParameters missing ->
+                    { title = "Pomodoro.ing"
+                    , body =
+                        [ div [ css [ Tw.max_w_md ] ]
+                            [ div []
+                                [ div [ css [ Tw.mb_4 ] ]
                                     [ h1
-                                        [ css []
+                                        [ css
+                                            [ Tw.font_bold
+                                            , Tw.text_2xl
+                                            , Tw.mb_1
+                                            , Tw.text_left
+                                            ]
                                         ]
-                                        [ text "Toggle Project View"
+                                        [ a [ href Path.Home_ ]
+                                            [ text "Pomodoro.ing" ]
+                                        ]
+                                    , h1 [ css [ Tw.mb_1 ] ]
+                                        [ text ("@ " ++ (shared.time |> viewDate zone))
                                         ]
                                     ]
                                 ]
-                            }
+                            , case missing of
+                                MissingUrl ->
+                                    div []
+                                        [ p []
+                                            [ text "No API url set." ]
+                                        , p [ css [ Tw.mt_2 ] ]
+                                            [ text "Go to the "
+                                            , a
+                                                [ href Path.Settings
+                                                , css
+                                                    [ Tw.text_color Theme.blue_600
+                                                    , Tw.underline
+                                                    ]
+                                                ]
+                                                [ text "settings page" ]
+                                            , text " to add it."
+                                            ]
+                                        ]
 
-                        _ ->
-                            { title = "Home"
-                            , body = [ div [] [ text "Loading..." ] ]
-                            }
+                                MissingKey ->
+                                    div []
+                                        [ p []
+                                            [ text "No license key set." ]
+                                        , p [ css [ Tw.mt_2 ] ]
+                                            [ text "Go to the "
+                                            , a
+                                                [ href Path.Settings
+                                                , css
+                                                    [ Tw.text_color Theme.blue_600
+                                                    , Tw.underline
+                                                    ]
+                                                ]
+                                                [ text "settings page" ]
+                                            , text " to add it."
+                                            ]
+                                        ]
+
+                                MissingBoth ->
+                                    div []
+                                        [ p []
+                                            [ text "No API url or license key set." ]
+                                        , p [ css [ Tw.mt_2 ] ]
+                                            [ text "Go to the "
+                                            , a
+                                                [ href Path.Settings
+                                                , css
+                                                    [ Tw.text_color Theme.blue_600
+                                                    , Tw.underline
+                                                    ]
+                                                ]
+                                                [ text "settings page" ]
+                                            , text " to add them."
+                                            ]
+                                        ]
+                            ]
+                        ]
+                    }
+
+                ApiError ->
+                    { title = "Home"
+                    , body = [ div [] [ text "Api error" ] ]
+                    }
+
+                Unauthorized ->
+                    { title = "Home"
+                    , body = [ div [] [ text "Unauthorized" ] ]
+                    }
+
+                NoData ->
+                    { title = "Home"
+                    , body = [ div [] [ text "No data" ] ]
+                    }
 
         _ ->
             { title = "Home"
