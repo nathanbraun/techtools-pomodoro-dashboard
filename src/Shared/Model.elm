@@ -12,7 +12,6 @@ import TimeZone
 type alias Model =
     { timezone : RemoteData TimeZone.Error Time.Zone
     , time : Time.Posix
-    , projects : WebData (List Project)
     , displayAggregated : Bool
     , apiUrl : Maybe String
     , licenseKey : Maybe String

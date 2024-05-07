@@ -66,7 +66,6 @@ init flagsResult route =
         ( Just url, Just key ) ->
             ( { timezone = Loading
               , time = Time.millisToPosix 0
-              , projects = NotAsked
               , displayAggregated = True
               , apiUrl = Just url
               , licenseKey = Just key
@@ -94,7 +93,6 @@ init flagsResult route =
         ( _, _ ) ->
             ( { timezone = Loading
               , time = Time.millisToPosix 0
-              , projects = NotAsked
               , displayAggregated = True
               , apiUrl = flags.apiUrl
               , licenseKey = flags.licenseKey
@@ -139,8 +137,13 @@ update route msg model =
             , Effect.none
             )
 
+        Shared.Msg.GotProjects (Success projects) ->
+            ( { model | appStatus = AppData projects }
+            , Effect.none
+            )
+
         Shared.Msg.GotProjects response ->
-            ( { model | projects = response }
+            ( { model | appStatus = ApiError }
             , Effect.none
             )
 

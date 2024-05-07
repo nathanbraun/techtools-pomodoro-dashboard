@@ -1,5 +1,6 @@
 module Pages.Home_ exposing (Model, Msg, page)
 
+import Api.Health exposing (AppStatus(..))
 import Api.Pomodoro exposing (PomoStatsInterval(..))
 import Api.Project exposing (Project)
 import Components.Table
@@ -164,8 +165,8 @@ view shared model =
                     }
 
                 ( Just _, _ ) ->
-                    case shared.projects of
-                        Success projects ->
+                    case shared.appStatus of
+                        AppData projects ->
                             { title = "Pomodoros"
                             , body =
                                 [ div []
@@ -254,11 +255,6 @@ view shared model =
                                         ]
                                     ]
                                 ]
-                            }
-
-                        Failure _ ->
-                            { title = "Home"
-                            , body = [ div [] [ text "Failed to load projects..." ] ]
                             }
 
                         _ ->
