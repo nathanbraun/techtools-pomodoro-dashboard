@@ -229,9 +229,53 @@ update route msg model =
             )
 
         Shared.Msg.SaveSettings url key test ->
-            ( { model | apiUrl = url, licenseKey = key, showTestData = test }
-            , Effect.none
-            )
+            case ( url, key ) of
+                ( Just url_, Just key_ ) ->
+                    ( { model
+                        | apiUrl = url
+                        , licenseKey = key
+                        , showTestData =
+                            test
+                      }
+                    , Effect.sendCmd
+                        (Health.queryHealth key_
+                            |> Graphql.Http.queryRequest ("https://" ++ url_)
+                            |> Graphql.Http.send
+                                (RemoteData.fromResult
+                                    >> Shared.Msg.GotHealth url_
+                                )
+                        )
+                    )
+
+                ( Just _, Nothing ) ->
+                    ( { model
+                        | apiUrl = url
+                        , licenseKey = key
+                        , showTestData = test
+                        , appStatus = MissingRequiredParameters MissingKey
+                      }
+                    , Effect.none
+                    )
+
+                ( Nothing, Just _ ) ->
+                    ( { model
+                        | apiUrl = url
+                        , licenseKey = key
+                        , showTestData = test
+                        , appStatus = MissingRequiredParameters MissingUrl
+                      }
+                    , Effect.none
+                    )
+
+                ( Nothing, Nothing ) ->
+                    ( { model
+                        | apiUrl = url
+                        , licenseKey = key
+                        , showTestData = test
+                        , appStatus = MissingRequiredParameters MissingBoth
+                      }
+                    , Effect.none
+                    )
 
 
 
