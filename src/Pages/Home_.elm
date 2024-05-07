@@ -335,7 +335,14 @@ view shared model =
                                     [ text "Your API is working, but you haven't added any data yet."
                                     ]
                                 , p [ css [ Tw.mt_4 ] ]
-                                    [ text "Try typing "
+                                    [ text "Try typing:"
+                                    ]
+
+                                , p [ css [ Tw.mt_4 ] ]
+                                    [ text "$ pomo -t "
+                                    ]
+                                , p [ css [ Tw.mt_4 ] ]
+                                    [ text "in the command line to add some test data, then refresh the page."
                                     ]
                                 ]
                             ]
