@@ -266,13 +266,80 @@ view shared model =
                     }
 
                 Unauthorized ->
-                    { title = "Home"
-                    , body = [ div [] [ text "Unauthorized" ] ]
+                    { title = "Pomodoro.ing"
+                    , body =
+                        [ div [ css [ Tw.max_w_md ] ]
+                            [ div []
+                                [ div [ css [ Tw.mb_4 ] ]
+                                    [ h1
+                                        [ css
+                                            [ Tw.font_bold
+                                            , Tw.text_2xl
+                                            , Tw.mb_1
+                                            , Tw.text_left
+                                            ]
+                                        ]
+                                        [ a [ href Path.Home_ ]
+                                            [ text "Pomodoro.ing" ]
+                                        ]
+                                    , h1 [ css [ Tw.mb_1 ] ]
+                                        [ text ("@ " ++ (shared.time |> viewDate zone))
+                                        ]
+                                    ]
+                                ]
+                            , div []
+                                [ p []
+                                    [ text "Your API is returning data, but the license key in "
+                                    , a
+                                        [ href Path.Settings
+                                        , css
+                                            [ Tw.text_color Theme.blue_600
+                                            , Tw.underline
+                                            ]
+                                        ]
+                                        [ text "settings" ]
+                                    , text " doesn't match the key on your server."
+                                    ]
+                                , p [ css [ Tw.mt_4 ] ]
+                                    [ text "Double check and make sure they're the same."
+                                    ]
+                                ]
+                            ]
+                        ]
                     }
 
                 NoData ->
-                    { title = "Home"
-                    , body = [ div [] [ text "No data" ] ]
+                    { title = "Pomodoro.ing"
+                    , body =
+                        [ div [ css [ Tw.max_w_md ] ]
+                            [ div []
+                                [ div [ css [ Tw.mb_4 ] ]
+                                    [ h1
+                                        [ css
+                                            [ Tw.font_bold
+                                            , Tw.text_2xl
+                                            , Tw.mb_1
+                                            , Tw.text_left
+                                            ]
+                                        ]
+                                        [ a [ href Path.Home_ ]
+                                            [ text "Pomodoro.ing" ]
+                                        ]
+                                    , h1 [ css [ Tw.mb_1 ] ]
+                                        [ text ("@ " ++ (shared.time |> viewDate zone))
+                                        ]
+                                    ]
+                                ]
+                            , div []
+                                [ p []
+                                    [ text "Your API is working, but you haven't added any data yet."
+                                    ]
+                                , p [ css [ Tw.mt_4 ] ]
+                                    [ text "Try typing "
+                                    ]
+                                ]
+                            ]
+                        ]
                     }
 
         _ ->
