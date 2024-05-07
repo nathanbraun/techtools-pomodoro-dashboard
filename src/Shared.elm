@@ -12,7 +12,7 @@ module Shared exposing
 
 -}
 
-import Api.Http as Http
+import Api.Health as Health exposing (AppStatus(..))
 import Api.Project as Project
 import Browser.Events
 import Effect exposing (Effect)
@@ -23,7 +23,7 @@ import Route exposing (Route)
 import Route.Path as Path
 import Shared.Model
 import Shared.Msg exposing (Key(..))
-import Task 
+import Task
 import Time
 import TimeZone
 
@@ -62,36 +62,55 @@ init flagsResult route =
             flagsResult
                 |> Result.withDefault (Flags Nothing Nothing True)
     in
-    ( { timezone = Loading
-      , time = Time.millisToPosix 0
-      , projects = NotAsked
-      , displayAggregated = True
-      , apiUrl = flags.apiUrl
-      , licenseKey = flags.licenseKey
-      , showTestData = flags.testDataFlag
-      }
-    , Effect.batch
-        [ Effect.sendCmd
-            (TimeZone.getZone
-                |> Task.attempt
-                    (RemoteData.fromResult >> Shared.Msg.ReceiveTimeZone)
-            )
-        , Effect.sendCmd (Task.perform Shared.Msg.GetTime Time.now)
-        , case flags.apiUrl of
-            Just url ->
-                Effect.sendCmd
-                    (Http.queryHealth "XXX"
+    case ( flags.apiUrl, flags.licenseKey ) of
+        ( Just url, Just key ) ->
+            ( { timezone = Loading
+              , time = Time.millisToPosix 0
+              , projects = NotAsked
+              , displayAggregated = True
+              , apiUrl = Just url
+              , licenseKey = Just key
+              , showTestData = flags.testDataFlag
+              , appStatus = InitialApp
+              }
+            , Effect.batch
+                [ Effect.sendCmd
+                    (TimeZone.getZone
+                        |> Task.attempt
+                            (RemoteData.fromResult >> Shared.Msg.ReceiveTimeZone)
+                    )
+                , Effect.sendCmd (Task.perform Shared.Msg.GetTime Time.now)
+                , Effect.sendCmd
+                    (Health.queryHealth key
                         |> Graphql.Http.queryRequest ("https://" ++ url)
                         |> Graphql.Http.send
                             (RemoteData.fromResult
                                 >> Shared.Msg.GotHealth
                             )
                     )
+                ]
+            )
 
-            Nothing ->
-                Effect.pushRoutePath Path.Settings
-        ]
-    )
+        ( _, _ ) ->
+            ( { timezone = Loading
+              , time = Time.millisToPosix 0
+              , projects = NotAsked
+              , displayAggregated = True
+              , apiUrl = flags.apiUrl
+              , licenseKey = flags.licenseKey
+              , showTestData = flags.testDataFlag
+              , appStatus = MissingRequiredParameters
+              }
+            , Effect.batch
+                [ Effect.sendCmd
+                    (TimeZone.getZone
+                        |> Task.attempt
+                            (RemoteData.fromResult >> Shared.Msg.ReceiveTimeZone)
+                    )
+                , Effect.sendCmd (Task.perform Shared.Msg.GetTime Time.now)
+                , Effect.pushRoutePath Path.Settings
+                ]
+            )
 
 
 

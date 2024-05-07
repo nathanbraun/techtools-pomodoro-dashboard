@@ -2,7 +2,8 @@ module Shared.Msg exposing (Key(..), Msg(..))
 
 {-| -}
 
-import Api.Http exposing (Health, WebData)
+import Api.Health exposing (Health)
+import Api.Http exposing (WebData)
 import Api.Project as Project exposing (Project)
 import RemoteData exposing (RemoteData)
 import Time
