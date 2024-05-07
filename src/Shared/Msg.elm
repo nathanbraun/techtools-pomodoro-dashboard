@@ -2,7 +2,7 @@ module Shared.Msg exposing (Key(..), Msg(..))
 
 {-| -}
 
-import Api.Http exposing (WebData)
+import Api.Http exposing (Health, WebData)
 import Api.Project as Project exposing (Project)
 import RemoteData exposing (RemoteData)
 import Time
@@ -21,6 +21,7 @@ type Msg
     | ReceiveTimeZone (RemoteData TimeZone.Error ( String, Time.Zone ))
     | GetTime Time.Posix
     | GotProjects (WebData (List Project))
+    | GotHealth (WebData Health)
     | ToggleDisplayAggregated
     | PressedKey Key
     | SaveSettings (Maybe String) (Maybe String) Bool

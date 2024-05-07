@@ -5,6 +5,10 @@
 module Pomo.Object exposing (..)
 
 
+type Health
+    = Health
+
+
 type Pomodoro
     = Pomodoro
 

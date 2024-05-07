@@ -12,7 +12,8 @@ module Shared exposing
 
 -}
 
-import Api.Project as Project exposing (Project)
+import Api.Http as Http
+import Api.Project as Project
 import Browser.Events
 import Effect exposing (Effect)
 import Graphql.Http
@@ -22,7 +23,7 @@ import Route exposing (Route)
 import Route.Path as Path
 import Shared.Model
 import Shared.Msg exposing (Key(..))
-import Task exposing (Task)
+import Task 
 import Time
 import TimeZone
 
@@ -60,7 +61,6 @@ init flagsResult route =
         flags =
             flagsResult
                 |> Result.withDefault (Flags Nothing Nothing True)
-
     in
     ( { timezone = Loading
       , time = Time.millisToPosix 0
@@ -80,11 +80,11 @@ init flagsResult route =
         , case flags.apiUrl of
             Just url ->
                 Effect.sendCmd
-                    (Project.queryProjects
+                    (Http.queryHealth "XXX"
                         |> Graphql.Http.queryRequest ("https://" ++ url)
                         |> Graphql.Http.send
                             (RemoteData.fromResult
-                                >> Shared.Msg.GotProjects
+                                >> Shared.Msg.GotHealth
                             )
                     )
 
@@ -123,6 +123,23 @@ update route msg model =
         Shared.Msg.GotProjects response ->
             ( { model | projects = response }
             , Effect.none
+            )
+
+        Shared.Msg.GotHealth response ->
+            ( model
+            , case model.apiUrl of
+                Just url ->
+                    Effect.sendCmd
+                        (Project.queryProjects
+                            |> Graphql.Http.queryRequest ("https://" ++ url)
+                            |> Graphql.Http.send
+                                (RemoteData.fromResult
+                                    >> Shared.Msg.GotProjects
+                                )
+                        )
+
+                Nothing ->
+                    Effect.pushRoutePath Path.Settings
             )
 
         Shared.Msg.ToggleDisplayAggregated ->

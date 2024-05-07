@@ -19,6 +19,18 @@ import Pomo.ScalarCodecs
 import Pomo.Union
 
 
+type alias HealthRequiredArguments =
+    { key : String }
+
+
+health :
+    HealthRequiredArguments
+    -> SelectionSet decodesTo Pomo.Object.Health
+    -> SelectionSet decodesTo RootQuery
+health requiredArgs____ object____ =
+    Object.selectionForCompositeField "health" [ Argument.required "key" requiredArgs____.key Encode.string ] object____ Basics.identity
+
+
 type alias PomodoroRequiredArguments =
     { id : Int }
 
