@@ -34,7 +34,7 @@ import TimeZone
 
 type alias Flags =
     { apiUrl : Maybe String
-    , licenseKey : Maybe String
+    , passkey : Maybe String
     , testDataFlag : Bool
     }
 
@@ -43,7 +43,7 @@ decoder : Json.Decode.Decoder Flags
 decoder =
     Json.Decode.map3 Flags
         (Json.Decode.field "apiUrl" (Json.Decode.maybe Json.Decode.string))
-        (Json.Decode.field "licenseKey" (Json.Decode.maybe Json.Decode.string))
+        (Json.Decode.field "passkey" (Json.Decode.maybe Json.Decode.string))
         (Json.Decode.field "testDataFlag" Json.Decode.bool)
 
 
@@ -62,13 +62,13 @@ init flagsResult route =
             flagsResult
                 |> Result.withDefault (Flags Nothing Nothing True)
     in
-    case ( flags.apiUrl, flags.licenseKey ) of
+    case ( flags.apiUrl, flags.passkey ) of
         ( Just url, Just key ) ->
             ( { timezone = Time.utc
               , time = Time.millisToPosix 0
               , displayAggregated = True
               , apiUrl = Just url
-              , licenseKey = Just key
+              , passkey = Just key
               , showTestData = flags.testDataFlag
               , appStatus = InitialApp
               }
@@ -95,7 +95,7 @@ init flagsResult route =
               , time = Time.millisToPosix 0
               , displayAggregated = True
               , apiUrl = flags.apiUrl
-              , licenseKey = flags.licenseKey
+              , passkey = flags.passkey
               , showTestData = flags.testDataFlag
               , appStatus = MissingRequiredParameters MissingUrl
               }
@@ -114,7 +114,7 @@ init flagsResult route =
               , time = Time.millisToPosix 0
               , displayAggregated = True
               , apiUrl = flags.apiUrl
-              , licenseKey = flags.licenseKey
+              , passkey = flags.passkey
               , showTestData = flags.testDataFlag
               , appStatus = MissingRequiredParameters MissingKey
               }
@@ -133,7 +133,7 @@ init flagsResult route =
               , time = Time.millisToPosix 0
               , displayAggregated = True
               , apiUrl = flags.apiUrl
-              , licenseKey = flags.licenseKey
+              , passkey = flags.passkey
               , showTestData = flags.testDataFlag
               , appStatus = MissingRequiredParameters MissingBoth
               }
@@ -237,7 +237,7 @@ update route msg model =
                 ( Just url_, Just key_ ) ->
                     ( { model
                         | apiUrl = url
-                        , licenseKey = key
+                        , passkey = key
                         , showTestData =
                             test
                       }
@@ -254,7 +254,7 @@ update route msg model =
                 ( Just _, Nothing ) ->
                     ( { model
                         | apiUrl = url
-                        , licenseKey = key
+                        , passkey = key
                         , showTestData = test
                         , appStatus = MissingRequiredParameters MissingKey
                       }
@@ -264,7 +264,7 @@ update route msg model =
                 ( Nothing, Just _ ) ->
                     ( { model
                         | apiUrl = url
-                        , licenseKey = key
+                        , passkey = key
                         , showTestData = test
                         , appStatus = MissingRequiredParameters MissingUrl
                       }
@@ -274,7 +274,7 @@ update route msg model =
                 ( Nothing, Nothing ) ->
                     ( { model
                         | apiUrl = url
-                        , licenseKey = key
+                        , passkey = key
                         , showTestData = test
                         , appStatus = MissingRequiredParameters MissingBoth
                       }

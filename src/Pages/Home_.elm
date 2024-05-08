@@ -222,7 +222,7 @@ view shared model =
                         MissingKey ->
                             div []
                                 [ p []
-                                    [ text "No license key set." ]
+                                    [ text "No Passkey set." ]
                                 , p [ css [ Tw.mt_2 ] ]
                                     [ text "Go to the "
                                     , a
@@ -240,7 +240,7 @@ view shared model =
                         MissingBoth ->
                             div []
                                 [ p []
-                                    [ text "No API url or license key set." ]
+                                    [ text "No API url or Passkey set." ]
                                 , p [ css [ Tw.mt_2 ] ]
                                     [ text "Go to the "
                                     , a
@@ -287,7 +287,7 @@ view shared model =
                         ]
                     , div []
                         [ p []
-                            [ text "Your API is returning data, but the license key in "
+                            [ text "Your API is returning data, but the Passkey in "
                             , a
                                 [ href Path.Settings
                                 , css

@@ -236,10 +236,10 @@ toggleDisplay =
 
 
 saveSettings : Maybe String -> Maybe String -> Bool -> Effect msg
-saveSettings apiUrl licenseKey test =
+saveSettings apiUrl passkey test =
     batch
-        [ SendSharedMsg (Shared.Msg.SaveSettings apiUrl licenseKey test)
+        [ SendSharedMsg (Shared.Msg.SaveSettings apiUrl passkey test)
         , sendOut (ApiUrl apiUrl)
-        , sendOut (LicenseKey licenseKey)
+        , sendOut (Passkey passkey)
         , sendOut (TestDataFlag test)
         ]

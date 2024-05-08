@@ -10,7 +10,7 @@ type alias Model =
     , time : Time.Posix
     , displayAggregated : Bool
     , apiUrl : Maybe String
-    , licenseKey : Maybe String
+    , passkey : Maybe String
     , showTestData : Bool
     , appStatus : AppStatus
     }

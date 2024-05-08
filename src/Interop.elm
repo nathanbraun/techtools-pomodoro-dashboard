@@ -11,7 +11,7 @@ type alias TaggedValue =
 type OutgoingData
     = LogError String
     | ApiUrl (Maybe String)
-    | LicenseKey (Maybe String)
+    | Passkey (Maybe String)
     | TestDataFlag Bool
 
 
@@ -23,8 +23,8 @@ encodeOut info =
             , data = maybe Json.Encode.string url
             }
 
-        LicenseKey key ->
-            { tag = "LICENSE_KEY"
+        Passkey key ->
+            { tag = "PASSKEY"
             , data = maybe Json.Encode.string key
             }
 

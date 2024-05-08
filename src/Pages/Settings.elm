@@ -45,7 +45,7 @@ init : Shared.Model -> () -> ( Model, Effect Msg )
 init shared () =
     ( { changed = False
       , inputUrl = shared.apiUrl
-      , inputKey = shared.licenseKey
+      , inputKey = shared.passkey
       , localTest = shared.showTestData
       }
     , Effect.none
@@ -169,7 +169,7 @@ view shared model =
                 ]
             ]
         , p [ css [ Tw.max_w_md ] ]
-            [ text "Add your Pomodro API URL and license key here."
+            [ text "Add your Pomodro API URL and Passkey here."
             ]
         , form [ css [ Tw.mt_4 ] ]
             [ div [ css [ Tw.max_w_md ] ]
@@ -283,7 +283,7 @@ inputLicense : Maybe String -> Html Msg
 inputLicense license =
     div []
         [ label
-            [ Attr.for "license-key"
+            [ Attr.for "passkey"
             , css
                 [ Tw.block
                 , Tw.text_sm
@@ -292,7 +292,7 @@ inputLicense license =
                 , Tw.text_color Theme.gray_900
                 ]
             ]
-            [ text "License Key" ]
+            [ text "Passkey" ]
         , div
             [ css
                 [ Tw.mt_2
